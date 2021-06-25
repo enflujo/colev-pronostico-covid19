@@ -35,7 +35,7 @@ function calcularMeses(inicio, final) {
 }
 
 function mesTexto(mes) {
-  return new Date(new Date('1970-01-01').setMonth(mes))
+  return new Date(new Date().setMonth(mes))
     .toLocaleString('es', {
       month: 'short',
     })
@@ -99,7 +99,7 @@ function crearSistemaCoordenadas() {
   // let x_axis_starting_point = { number: 1, suffix: '\u03a0' }; // este suffix imprime el icono de pi?
   // let y_axis_starting_point = { number: 1, suffix: '' };
   // let num_lines_y = (window.innerHeight / pasoDia) | 0;
-  const baseTexto = window.innerHeight - 15;
+  const baseTexto = base + 15;
   ctx.lineWidth = 1;
   ctx.font = '9px Arial';
   ctx.textAlign = 'start';
@@ -112,7 +112,7 @@ function crearSistemaCoordenadas() {
     const mes = (fechaInicial.getMonth() + i) % 12;
     ctx.beginPath();
     ctx.moveTo(x, 0); // mover en x y comenzar arriba
-    ctx.lineTo(x, lienzo.height); // dibujar linea hasta abajo
+    ctx.lineTo(x, base); // dibujar linea hasta abajo
     ctx.stroke();
     ctx.fillText(mesTexto(mes), x, baseTexto);
   }
