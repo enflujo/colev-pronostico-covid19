@@ -7,6 +7,7 @@ const ctx = lienzo.getContext('2d');
 
 const estimado = csv.filter((caso) => caso.type === 'estimate');
 const data_fitted = csv2.filter((caso) => caso.type === 'fitted');
+const data_preliminary = csv2.filter((caso) => caso.type === 'preliminary');
 const fechaInicial = new Date(csv[0].date);
 const fechaFinal = new Date(csv[csv.length - 1].date);
 const duracion = deFechaADias(fechaFinal - fechaInicial);
@@ -23,7 +24,7 @@ ajustar();
 crearSistemaCoordenadas();
 
 
-console.log(data_fitted, estimado);
+console.log(data_fitted, estimado, data_preliminary);
 
 function deFechaADias(fecha) {
   return fecha / (1000 * 60 * 60 * 24);
@@ -62,7 +63,7 @@ function dibujarLinea(llave) {
 }
 
 function dibujarCirculos() {
-  for (let i = 0; i <= data_fitted.length; i++) {
+  for (let i = 0; i < data_fitted.length; i++) {
     const fila = data_fitted[i];
     const xC = pasoDia * deFechaADias(new Date(fila.date_time) - fechaInicial);
     const yC = base - fila.death;
@@ -70,6 +71,19 @@ function dibujarCirculos() {
     ctx.strokeStyle = 'black';
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
     ctx.arc(xC, yC, 3, 0, PiDos);
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+function dibujarCirculosRojos() {
+  for (let i = 0; i < data_preliminary.length; i++) {
+    const fila = data_preliminary[i];
+    const xCR = pasoDia * deFechaADias(new Date(fila.date_time) - fechaInicial);
+    const yCR = base - fila.death;
+    ctx.beginPath();
+    ctx.strokeStyle = 'red';
+    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+    ctx.arc(xCR, yCR, 3, 0, PiDos);
     ctx.fill();
     ctx.stroke();
   }
@@ -108,7 +122,7 @@ function ajustar() {
   dibujarLinea('low_95');
   dibujarLinea('median');
   dibujarCirculos();
-  
+  dibujarCirculosRojos()
 }
 
 function crearSistemaCoordenadas() {
