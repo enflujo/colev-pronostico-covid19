@@ -1,12 +1,12 @@
 import './scss/styles.scss';
 import csv from './datos/deaths_df.csv';
-import csv2 from './datos/cases_df.csv';
+import csv2 from './datos/cases.csv';
 
 const lienzo = document.getElementById('lienzo');
 const ctx = lienzo.getContext('2d');
 
 const estimado = csv.filter((caso) => caso.type === 'estimate');
-const forecast = csv.filter((caso) => caso.type === 'forecast');
+const data_fitted = csv2.filter((caso) => caso.type === 'fitted');
 const fechaInicial = new Date(csv[0].date);
 const fechaFinal = new Date(csv[csv.length - 1].date);
 const duracion = deFechaADias(fechaFinal - fechaInicial);
@@ -20,8 +20,10 @@ let pasoMes;
 const pasoCasos = 50;
 
 ajustar();
-
 crearSistemaCoordenadas();
+
+
+console.log(data_fitted, estimado);
 
 function deFechaADias(fecha) {
   return fecha / (1000 * 60 * 60 * 24);
@@ -42,7 +44,7 @@ function mesTexto(mes) {
     .toString();
 }
 
-console.log(csv, duracion, pasoDia);
+
 
 function dibujarLinea(llave) {
   ctx.beginPath();
@@ -57,6 +59,20 @@ function dibujarLinea(llave) {
     ctx.lineTo(x, y);
   });
   ctx.stroke();
+}
+
+function dibujarCirculos() {
+  for (let i = 0; i <= data_fitted.length; i++) {
+    const fila = data_fitted[i];
+    const xC = pasoDia * deFechaADias(new Date(fila.date_time) - fechaInicial);
+    const yC = base - fila.death;
+    ctx.beginPath();
+    ctx.strokeStyle = 'black';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.arc(xC, yC, 3, 0, PiDos);
+    ctx.fill();
+    ctx.stroke();
+  }
 }
 
 function ajustar() {
@@ -91,14 +107,11 @@ function ajustar() {
   dibujarLinea('high_95');
   dibujarLinea('low_95');
   dibujarLinea('median');
+  dibujarCirculos();
+  
 }
 
 function crearSistemaCoordenadas() {
-  // let x_axis_distance_grid_lines = 50;
-  // let y_axis_distance_grid_lines = pasoDia;
-  // let x_axis_starting_point = { number: 1, suffix: '\u03a0' }; // este suffix imprime el icono de pi?
-  // let y_axis_starting_point = { number: 1, suffix: '' };
-  // let num_lines_y = (window.innerHeight / pasoDia) | 0;
   const baseTexto = base + 15;
   ctx.lineWidth = 1;
   ctx.font = '9px Arial';
@@ -122,51 +135,12 @@ function crearSistemaCoordenadas() {
     const y = base - i;
     ctx.beginPath();
 
-    // No entendí esta comparación para cambiar el color: si i es igual a y_axis_distance_grid_lines que es igual pasoDia?
-    // if (i == y_axis_distance_grid_lines) {
-    //   ctx.strokeStyle = '#FF5733';
-    // } else {
-    //   ctx.strokeStyle = '#e9e9e9';
-    // }
-
-    // Tampoco entendí esta parte
-    // if (i == num_lines_y) {
-    //   ctx.moveTo(pasoDia * i, 0);
-    //   ctx.lineTo(pasoDia * i, lienzo.height);
-    // } else {
-    //   ctx.moveTo(pasoDia * i + 0.5, 0);
-    //   ctx.lineTo(pasoDia * i + 0.5, lienzo.height);
-    // }
     ctx.moveTo(0, y);
     ctx.lineTo(window.innerWidth, y);
     ctx.stroke();
     ctx.fillText(i, 0, y);
   }
-  // //TickLines X-Axis
-  // for (let i = y_axis_distance_grid_lines; i < num_lines_y - y_axis_distance_grid_lines; i++) {
-  //   ctx.beginPath();
-  //   ctx.lineWidth = 1;
-  //   ctx.strokeStyle = '#FF5733';
-
-  //   ctx.moveTo(pasoDia * i + 0.5, -30);
-  //   ctx.lineTo(pasoDia * i + 0.5, 30);
-  //   ctx.stroke();
-  // }
-  //TickLines Y-Axis
-  // for(let i=1; i<(num_lines_x - x_axis_distance_grid_lines); i++) {
-  //   ctx.beginPath();
-  //   ctx.lineWidth = 1;
-  //   ctx.strokeStyle = "#000";
-
-  //   ctx.moveTo(-3, y_axis_distance_grid_lines*i+0.5);
-  //   ctx.lineTo(3, y_axis_distance_grid_lines*i+0.5);
-  //   ctx.stroke();
-
-  //   // Text value at that point
-  //   ctx.font = '9px Arial';
-  //   ctx.textAlign = 'start';
-  //   ctx.fillText(-y_axis_starting_point.number*i + y_axis_starting_point.suffix, 8, pasoDia*i+3);
-  // }
+ 
 }
 
 window.onresize = ajustar;
