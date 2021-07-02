@@ -67,6 +67,36 @@ function dibujarLinea(llave) {
   ctx.stroke();
 }
 
+// function dibujarLineaRojoClaro(llave) {
+//   ctx.beginPath();
+//   ctx.strokeStyle = rojoClaro;
+//   forecast.forEach((fila, i) => {
+//     const x = (pasoDia * deFechaADias(new Date(fila.date) - fechaInicial) + espacioIzquierda);
+//     const y = base - fila[llave];
+
+//     if (i === 0) {
+//       ctx.moveTo(x, y);
+//     }
+//     ctx.lineTo(x, y);
+//   });
+//   ctx.stroke();
+// }
+
+function dibujarLineaForecast(llave) {
+  ctx.beginPath();
+  ctx.strokeStyle = grisOscuro;
+  forecast.forEach((fila, i) => {
+    const x = (pasoDia * deFechaADias(new Date(fila.date) - fechaInicial) + espacioIzquierda);
+    const y = base - fila[llave];
+
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    }
+    ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+}
+
 function dibujarCirculos() {
   for (let i = 0; i < data_fitted.length; i++) {
     const fila = data_fitted[i];
@@ -256,6 +286,9 @@ function ajustar() {
   dibujarLinea('high_95');
   dibujarLinea('low_95');
   dibujarLinea('median');
+  dibujarLineaForecast('median');
+  // dibujarLineaRojoClaro('high_95');
+  // dibujarLineaRojoClaro('low_95');
   dibujarCirculos();
   dibujarCirculosRojos();
   pintarPalabraDeaths();
@@ -269,17 +302,20 @@ function crearSistemaCoordenadas() {
   ctx.textAlign = 'start';
   ctx.strokeStyle = '#e9e9e9';
   ctx.fillStyle = 'black';
+  let text = ctx.measureText('Sept.');
 
   // X-Axis: Cambie esto para que sean los meses y no los días
   for (let i = 0; i <= duracionMeses; i++) {
     const x = pasoMes * i + espacioIzquierda;
     const mes = (fechaInicial.getMonth() + i) % 15;
+    
     ctx.beginPath();
     ctx.moveTo(x, 0); // mover en x y comenzar arriba
     ctx.lineTo(x, base); // dibujar linea hasta abajo
     ctx.stroke();
-    ctx.fillText(mesTexto(mes), x, baseTexto);
+    ctx.fillText(mesTexto(mes), x - 15, baseTexto);
   }
+  // console.log(text)
 
   // Y-Axis
   for (let i = 0; i <= pasoCasos * 4; i += pasoCasos) {
@@ -288,7 +324,7 @@ function crearSistemaCoordenadas() {
     ctx.moveTo(espacioIzquierda, y);
     ctx.lineTo(window.innerWidth, y);
     ctx.stroke();
-    ctx.fillText(i, (espacioIzquierda - 50), y);
+    ctx.fillText(i, (espacioIzquierda - 50), y + 8);
   }
 }
 
