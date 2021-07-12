@@ -7,7 +7,8 @@ const lienzo = document.getElementById('lienzo');
 const ctx = lienzo.getContext('2d');
 const tipLienzo = document.getElementById("tip");
 const tipCtx = tipLienzo.getContext("2d");
-const zoomctx = document.getElementById('zoom').getContext('2d');
+const zoomLienzo = document.getElementById('zoom');
+const zoomctx = zoomLienzo.getContext('2d');
 
 const csvLimpio = limpiarDatos(csv);
 const cvs2Limpio = limpiarDatos(csv2);
@@ -25,11 +26,13 @@ const rojoClaro = '#d6a09f';
 const rojoMenosClaro = '#cc8785';
 const rojoOscuro = '#c57876';
 const PiDos = 2 * Math.PI;
+const proporcionBase = 4;
 let base;
 let pasoDia;
 let pasoMes;
 const pasoCasos = 50;
 let espacioIzquierda = 100;
+
 
 let hotspots = [];
 let hotspotsFranjas = [];
@@ -37,57 +40,57 @@ let hotspotsFranjasRojas = [];
 let offsetX = lienzo.offsetLeft;
 let offsetY = lienzo.offsetTop;
 
-// let zoom = function(event) {
-//   let x = event.layerX;
-//   let y = event.layerY;
-//   zoomctx.imageSmoothingEnabled = true;
-//   zoomctx.webkitImageSmoothingEnabled = true;
-//   zoomctx.msImageSmoothingEnabled = true;
-//   zoomctx.drawImage(lienzo,
-//                     Math.abs(x - 5),
-//                     Math.abs(y - 5),
-//                     10, 10,
-//                     0, 0,
-//                     200, 200);
-// };
+let zoom = function (event) {
+  //definir el tamaño del canvas
+  zoomctx.clearRect(0, 0, zoomLienzo.width, zoomLienzo.height)
+  let x = event.layerX * 2;
+  let y = event.layerY * 2;
+  zoomctx.imageSmoothingEnabled = true;
+  zoomctx.webkitImageSmoothingEnabled = true;
+  zoomctx.msImageSmoothingEnabled = true;
+  zoomctx.drawImage(lienzo,
+                    Math.abs(x - 400),
+                    Math.abs(y - 400),
+                    800, 800,
+                    0, 0,
+                    800, 800);
+};
 
 
 window.onresize = ajustar;
 
-window.addEventListener('mousemove',
-  // zoom,
-  (e) => {
+window.addEventListener('mousemove', (e) => {
+  zoom(e);
   const x = e.x;
   const y = e.y;
   // Acá se puede comenzar a hacer algo interactivo...
   manejarMovimientoMousePuntos(e);
-  manejarMovimientoMouseFranjasEstimado(e)
-  manejarMovimientoMouseFranjasForecast(e)
 });
 
 
 
   
 function manejarMovimientoMousePuntos(e){
-  let mouseX = parseInt(e.clientX-offsetX);
-  let mouseY = parseInt(e.clientY-offsetY);
+  let mouseX = parseInt((e.clientX-offsetX) * 2);
+  let mouseY = parseInt((e.clientY-offsetY) * 2);
   for (let i = 0; i < hotspots.length; i++) {
       let hotspot = hotspots[i];
       let dx = mouseX - hotspot.x;
       let dy = mouseY - hotspot.y;
       if (dx * dx + dy * dy < hotspot.rXr) {
-        tipLienzo.style.left = (hotspot.x) + "px";
-        tipLienzo.style.top = (hotspot.y - 40) + "px";
+        tipLienzo.style.left = (hotspot.x / 2) + "px";
+        tipLienzo.style.top = ((hotspot.y - 40)/2) + "px";
         tipCtx.clearRect(0, 0, tipLienzo.width, tipLienzo.height);
         tipCtx.fillText("width:" + tipCtx.measureText(hotspot.tip).width, 15, 25);
         tipCtx.fillText(hotspot.tip, 5, 15);
+        break;
       }
   }
 }
 
 function manejarMovimientoMouseFranjasEstimado(e){
-  let mouseX = parseInt(e.clientX-offsetX);
-  let mouseY = parseInt(e.clientY-offsetY);
+  let mouseX = parseInt((e.clientX-offsetX) * 2);
+  let mouseY = parseInt((e.clientY-offsetY) * 2);
   for (let i = 0; i < hotspotsFranjas.length; i++) {
       let hotspotF = hotspotsFranjas[i];
       let dx = mouseX - hotspotF.x;
@@ -95,48 +98,33 @@ function manejarMovimientoMouseFranjasEstimado(e){
       let tipText = tipCtx.measureText(hotspotF.tip).width;
     if (dx * dx + dy * dy < hotspotF.rXr) {
         let tipLienzoWidth = tipText;
-        tipLienzo.style.left = (hotspotF.x) + "px";
-        tipLienzo.style.top = (hotspotF.y - 40) + "px";
+        tipLienzo.style.left = (hotspotF.x/2) + "px";
+        tipLienzo.style.top = ((hotspotF.y - 40)/2) + "px";
         tipCtx.clearRect(0, 0, tipLienzoWidth, tipLienzo.height);
         tipCtx.fillText(tipCtx.measureText(hotspotF.tip).width, 5, 10);
-        tipCtx.fillText(hotspotF.tip, 5, 20);
+      tipCtx.fillText(hotspotF.tip, 5, 20);
+      break;
       }
   }
 }
 
-function manejarMovimientoMouseFranjasForecast(e){
-  let mouseX = parseInt(e.clientX-offsetX);
-  let mouseY = parseInt(e.clientY-offsetY);
-  for (let i = 0; i < hotspotsFranjasRojas.length; i++) {
-      let hotspotFR = hotspotsFranjasRojas[i];
-      let dx = mouseX - hotspotFR.x;
-      let dy = mouseY - hotspotFR.y;
-      let tipText = tipCtx.measureText(hotspotFR.tip).width;
-    if (dx * dx + dy * dy < hotspotFR.rXr) {
-        let tipLienzoWidth = tipText;
-        tipLienzo.style.left = (hotspotFR.x) + "px";
-        tipLienzo.style.top = (hotspotFR.y - 40) + "px";
-        tipCtx.clearRect(0, 0, tipLienzoWidth, tipLienzo.height);
-        tipCtx.fillText(tipCtx.measureText(hotspotFR.tip).width, 5, 10);
-        tipCtx.fillText(hotspotFR.tip, 5, 20);
-      }
-  }
-}
+
 
 
 ajustar();
 
 function ajustar() {
-  lienzo.width = window.innerWidth;
-  lienzo.height = window.innerHeight;
-  pasoDia = (window.innerWidth / duracion) | 0;
-  pasoMes = (window.innerWidth / duracionMeses) | 0;
-  base = window.innerHeight - window.innerHeight / 5;
+  lienzo.width = window.innerWidth * 2;
+  lienzo.height = window.innerHeight * 2;
+  zoomLienzo.width = 600;
+  zoomLienzo.height = 600;
+  pasoDia = (lienzo.width / duracion) | 0;
+  pasoMes = (lienzo.width / duracionMeses) | 0;
+  base = lienzo.height - lienzo.height / 5;
   pintar();
   obtenerDatosPuntos(data_fitted);
   obtenerDatosPuntos(data_preliminary);
   obtenerDatosFranjas(estimado);
-  obtenerDatosFranjasRojas(forecast);
 }
 
 
@@ -161,7 +149,7 @@ function dibujarLinea(datos, llave) {
   ctx.strokeStyle = grisOscuro;
   datos.forEach((fila, i) => {
     const x = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const y = base - fila[llave];
+    const y = base - fila[llave] * proporcionBase;
 
     if (i === 0) {
       ctx.moveTo(x, y);
@@ -177,7 +165,7 @@ function circulos(datos, color, colorBorde, radio) {
 
   datos.forEach((fila) => {
     const xC = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const yC = base - fila.death;
+    const yC = base - fila.death * proporcionBase;
     ctx.beginPath();
     ctx.arc(xC, yC, radio, 0, PiDos);
     ctx.fill();
@@ -188,7 +176,7 @@ function circulos(datos, color, colorBorde, radio) {
 function obtenerDatosPuntos(datos) {
   datos.forEach((fila) => {
     const xC = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const yC = base - fila.death;
+    const yC = base - fila.death * proporcionBase;
     const death = fila.death
     hotspots.push({
       x: xC,
@@ -202,36 +190,34 @@ function obtenerDatosPuntos(datos) {
 
 function obtenerDatosFranjas(datos) {
   datos.forEach((fila) => {
-    const xCF = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const yCF = base - fila.low_95;
-    const high_95 = fila.high_95;
-    const low_95 = fila.low_95;
-    hotspotsFranjas.push({
-      x: xCF,
-      y: yCF,
-      r: 4,
-      rXr: 16,
-      tip: high_95 + '' + 'Máximo' +  low_95 + 'Mínimo', 
+    let x1x2 = [];
+    const x1x = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
+    const x1y = base - fila.low_95 * proporcionBase;
+    const x2x = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
+    const x2y = base - fila.high_95 * proporcionBase;
+    x1x2.push({
+      //
     });
+
+
+
+    // const xCF = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
+    // const yCF = base - fila.low_95 * proporcionBase;
+    // const high_95 = fila.high_95;
+    // const low_95 = fila.low_95;
+    // hotspotsFranjas.push({
+    //   x: xCF,
+    //   y: yCF,
+    //   r: 4,
+    //   rXr: 16,
+    //   tip: high_95 + '' + 'Máximo' +  low_95 + 'Mínimo', 
+    // });
+    console.log(x1y, x2y)
   });
   
 }
 
-function obtenerDatosFranjasRojas(datos) {
-  datos.forEach((fila) => {
-    const xCFR = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const yCFR = base - fila.low_95;
-    const high_95 = fila.high_95;
-    const low_95 = fila.low_95;
-    hotspotsFranjasRojas.push({
-      x: xCFR,
-      y: yCFR,
-      r: 4,
-      rXr: 16,
-      tip: high_95 + '' + 'Máximo' +  low_95 + 'Mínimo', 
-    });
-  });
-}
+
 
 
 function rellenar(datos, superior, inferior, color) {
@@ -239,7 +225,7 @@ function rellenar(datos, superior, inferior, color) {
   ctx.fillStyle = color;
   datos.forEach((fila, i) => {
     const x = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const y = base - fila[superior];
+    const y = base - fila[superior] * proporcionBase;
 
     if (i === 0) {
       ctx.moveTo(x, y);
@@ -250,7 +236,7 @@ function rellenar(datos, superior, inferior, color) {
   for (let i = datos.length - 1; i >= 0; i--) {
     const fila = datos[i];
     const x = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const y = base - fila[inferior];
+    const y = base - fila[inferior] * proporcionBase;
     ctx.lineTo(x, y);
   }
 
@@ -291,10 +277,10 @@ function pintarPalabraDeaths() {
 
       // Y-Axis
       for (let i = 0; i <= pasoCasos * 4; i += pasoCasos) {
-        const y = base - i;
+        const y = base - i * proporcionBase;
         ctx.beginPath();
         ctx.moveTo(espacioIzquierda, y);
-        ctx.lineTo(window.innerWidth, y);
+        ctx.lineTo(lienzo.width, y);
         ctx.stroke();
         ctx.fillText(i, espacioIzquierda - 50, y + 8);
       }
