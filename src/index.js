@@ -2,22 +2,29 @@ import './scss/styles.scss';
 import { msADias, calcularMeses, mesATexto, limpiarDatos } from './utilidades/ayudas';
 import csv from './datos/deaths_df.csv';
 import csv2 from './datos/cases.csv';
+import csv3 from './datos/deaths_df-21-08-08.csv'
+import csv4 from './datos/cases_df-21-08-08.csv'
 
 const lienzo = document.getElementById('lienzo');
 const ctx = lienzo.getContext('2d');
-const tipLienzo = document.getElementById("tip");
-const tipCtx = tipLienzo.getContext("2d");
-const zoomLienzo = document.getElementById('zoom');
-const zoomctx = zoomLienzo.getContext('2d');
+const tipLienzo = document.getElementById('tip');
+const tipCtx = tipLienzo.getContext('2d');
+// const zoomLienzo = document.getElementById('zoom');
+// const zoomctx = zoomLienzo.getContext('2d');
+const forecastLienzo = document.getElementById('forecastLienzo');
+const forecastCtx = forecastLienzo.getContext('2d');
 
 const csvLimpio = limpiarDatos(csv);
 const cvs2Limpio = limpiarDatos(csv2);
+const csv3Limpio = limpiarDatos(csv3);
+const csv4Limpio = limpiarDatos(csv4);
 const estimado = csvLimpio.filter((caso) => caso.type === 'estimate');
 const forecast = csvLimpio.filter((caso) => caso.type === 'forecast');
 const data_fitted = cvs2Limpio.filter((caso) => caso.type === 'fitted');
 const data_preliminary = cvs2Limpio.filter((caso) => caso.type === 'preliminary');
 const fechaInicial = csvLimpio[0].date;
 const fechaFinal = csvLimpio[csvLimpio.length - 1].date;
+console.log(csvLimpio[csvLimpio.length - 1].date);
 const duracion = msADias(fechaFinal - fechaInicial);
 const duracionMeses = calcularMeses(fechaInicial, fechaFinal);
 const grisClaro = '#80808066';
@@ -33,46 +40,80 @@ let pasoMes;
 const pasoCasos = 50;
 let espacioIzquierda = 100;
 
-
 let hotspots = [];
 let hotspotsFranjas = [];
-let hotspotsFranjasRojas = [];
 let offsetX = lienzo.offsetLeft;
 let offsetY = lienzo.offsetTop;
 
-let zoom = function (event) {
-  //definir el tamaño del canvas
-  zoomctx.clearRect(0, 0, zoomLienzo.width, zoomLienzo.height)
-  let x = event.layerX * 2;
-  let y = event.layerY * 2;
-  zoomctx.imageSmoothingEnabled = true;
-  zoomctx.webkitImageSmoothingEnabled = true;
-  zoomctx.msImageSmoothingEnabled = true;
-  zoomctx.drawImage(lienzo,
-                    Math.abs(x - 400),
-                    Math.abs(y - 400),
-                    800, 800,
-                    0, 0,
-                    800, 800);
-};
+// let zoom = function (event) {
+//   //definir el tamaño del canvas
+//   zoomctx.clearRect(0, 0, zoomLienzo.width, zoomLienzo.height)
+//   let x = event.layerX * 2;
+//   let y = event.layerY * 2;
+//   zoomctx.imageSmoothingEnabled = true;
+//   zoomctx.webkitImageSmoothingEnabled = true;
+//   zoomctx.msImageSmoothingEnabled = true;
+//   zoomctx.drawImage(lienzo,
+//                     Math.abs(x - 400),
+//                     Math.abs(y - 400),
+//                     800, 800,
+//                     0, 0,
+//                     800, 800);
+// };
+
+
 
 
 window.onresize = ajustar;
 
 window.addEventListener('mousemove', (e) => {
-  zoom(e);
+  // zoom(e);
   const x = e.x;
   const y = e.y;
   // Acá se puede comenzar a hacer algo interactivo...
   manejarMovimientoMousePuntos(e);
+
 });
 
+let datosForecast = []
 
+window.onclick = function (e) {
+  // datosCirculosForecast()
+  circulosForecast(datosForecast, 'rgba(0, 0, 0, 0.5)', 'red', 7);
+  obtenerDatosForecast(e)
+  
+}
+
+
+// function datosCirculosForecast() {
+//   for (let i = 0; i <= 10; i++){
+//     let datos = cvs2Limpio[i];
+//     datosForecast.push(datos)
+//   }
+// }
+
+function limpiarForecast() {
+  datosForecast.splice(0, datosForecast.length)
+}
+
+function obtenerDatosForecast(e) {
+  let mouseX = (e.clientX - offsetX) * 2;
+  let ubicacionForecastX = mouseX / pasoDia;
+  let espacioIzquierdaDias = espacioIzquierda / pasoDia;
+  let puntoExacto = Math.floor(ubicacionForecastX - espacioIzquierdaDias);
+  let diasAMostrarForecast = 30;
+  for (let i = puntoExacto; i <= puntoExacto + diasAMostrarForecast; i++){
+    let datos = cvs2Limpio[i];
+    datosForecast.push(datos)
+    console.log(ubicacionForecastX, puntoExacto)
+  }
+}
+console.log(datosForecast)
 
   
 function manejarMovimientoMousePuntos(e){
   let mouseX = parseInt((e.clientX-offsetX) * 2);
-  let mouseY = parseInt((e.clientY-offsetY) * 2);
+  let mouseY = parseInt((e.clientY - offsetY) * 2);
   for (let i = 0; i < hotspots.length; i++) {
       let hotspot = hotspots[i];
       let dx = mouseX - hotspot.x;
@@ -116,8 +157,10 @@ ajustar();
 function ajustar() {
   lienzo.width = window.innerWidth * 2;
   lienzo.height = window.innerHeight * 2;
-  zoomLienzo.width = 600;
-  zoomLienzo.height = 600;
+  // zoomLienzo.width = 600;
+  // zoomLienzo.height = 600;
+  forecastLienzo.width = window.innerWidth * 2;
+  forecastLienzo.height = window.innerHeight * 2;
   pasoDia = (lienzo.width / duracion) | 0;
   pasoMes = (lienzo.width / duracionMeses) | 0;
   base = lienzo.height - lienzo.height / 5;
@@ -173,6 +216,20 @@ function circulos(datos, color, colorBorde, radio) {
   });
 }
 
+function circulosForecast(datos, color, colorBorde, radio) {
+  forecastCtx.fillStyle = color;
+  forecastCtx.strokeStyle = colorBorde;
+
+  datos.forEach((fila) => {
+    const xCF = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
+    const yCF = base - fila.death * proporcionBase;
+    forecastCtx.beginPath();
+    forecastCtx.arc(xCF, yCF, radio, 0, PiDos);
+    forecastCtx.fill();
+    forecastCtx.stroke();
+  });
+}
+
 function obtenerDatosPuntos(datos) {
   datos.forEach((fila) => {
     const xC = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
@@ -189,32 +246,18 @@ function obtenerDatosPuntos(datos) {
 }
 
 function obtenerDatosFranjas(datos) {
+  let y1yMinusy2y;
   datos.forEach((fila) => {
-    let x1x2 = [];
     const x1x = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const x1y = base - fila.low_95 * proporcionBase;
-    const x2x = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    const x2y = base - fila.high_95 * proporcionBase;
-    x1x2.push({
-      //
+    const y1y = base - fila.low_95 * proporcionBase;
+    const y2y = base - fila.high_95 * proporcionBase;
+    y1yMinusy2y = y1y - y2y | 0; //# pixeles entre low_95 y hight_95
+    const y1yMinusy2yArray = [];
+    y1yMinusy2yArray.push({
+      x: x1x,
+      y1: y1yMinusy2y,
     });
-
-
-
-    // const xCF = pasoDia * msADias(fila.date - fechaInicial) + espacioIzquierda;
-    // const yCF = base - fila.low_95 * proporcionBase;
-    // const high_95 = fila.high_95;
-    // const low_95 = fila.low_95;
-    // hotspotsFranjas.push({
-    //   x: xCF,
-    //   y: yCF,
-    //   r: 4,
-    //   rXr: 16,
-    //   tip: high_95 + '' + 'Máximo' +  low_95 + 'Mínimo', 
-    // });
-    console.log(x1y, x2y)
-  });
-  
+  })
 }
 
 
@@ -261,7 +304,6 @@ function pintarPalabraDeaths() {
       ctx.textAlign = 'start';
       ctx.strokeStyle = '#e9e9e9';
       ctx.fillStyle = 'black';
-      // let text = ctx.measureText('Sept.');
 
       // X-Axis: Cambie esto para que sean los meses y no los días
       for (let i = 0; i <= duracionMeses; i++) {
