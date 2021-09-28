@@ -24,7 +24,6 @@ const data_fitted = cvs2Limpio.filter((caso) => caso.type === 'fitted');
 const data_preliminary = cvs2Limpio.filter((caso) => caso.type === 'preliminary');
 const fechaInicial = csvLimpio[0].date;
 const fechaFinal = csvLimpio[csvLimpio.length - 1].date;
-console.log(csvLimpio[csvLimpio.length - 1].date);
 const duracion = msADias(fechaFinal - fechaInicial);
 const duracionMeses = calcularMeses(fechaInicial, fechaFinal);
 const grisClaro = '#80808066';
@@ -76,27 +75,19 @@ window.addEventListener('mousemove', (e) => {
 });
 
 let datosForecast = []
+console.log(datosForecast)
 
 window.onclick = function (e) {
-  // datosCirculosForecast()
+  forecastCtx.clearRect(0, 0, forecastLienzo.width, forecastLienzo.height)
   circulosForecast(datosForecast, 'rgba(0, 0, 0, 0.5)', 'red', 7);
   obtenerDatosForecast(e)
-  
+  console.log(datosForecast)
 }
 
-
-// function datosCirculosForecast() {
-//   for (let i = 0; i <= 10; i++){
-//     let datos = cvs2Limpio[i];
-//     datosForecast.push(datos)
-//   }
-// }
-
-function limpiarForecast() {
-  datosForecast.splice(0, datosForecast.length)
-}
 
 function obtenerDatosForecast(e) {
+
+  datosForecast.splice(0, datosForecast.length)
   let mouseX = (e.clientX - offsetX) * 2;
   let ubicacionForecastX = mouseX / pasoDia;
   let espacioIzquierdaDias = espacioIzquierda / pasoDia;
@@ -105,10 +96,8 @@ function obtenerDatosForecast(e) {
   for (let i = puntoExacto; i <= puntoExacto + diasAMostrarForecast; i++){
     let datos = cvs2Limpio[i];
     datosForecast.push(datos)
-    console.log(ubicacionForecastX, puntoExacto)
   }
 }
-console.log(datosForecast)
 
   
 function manejarMovimientoMousePuntos(e){
