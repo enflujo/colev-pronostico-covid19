@@ -1,3 +1,10 @@
+import dayjs from 'dayjs';
+import UTC from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(UTC);
+dayjs.extend(timezone);
+
 export const fechaValida = (fecha) => {
   return fecha instanceof Date && !isNaN(fecha);
 };
@@ -43,13 +50,13 @@ export const mesATexto = (mes) => {
  * @param {Array} csv Datos a limpiar.
  * @returns El mismo array procesado y validado.
  */
-export const limpiarDatos = (csv) => {
+export const limpiarDatos = (csv, llaveFecha) => {
   return csv.map((fila, i) => {
     const fechaTexto = fila.hasOwnProperty('date') ? fila.date : fila.date_time;
-    const fecha = new Date(fechaTexto);
+    const fecha = dayjs.tz(fechaTexto, 'America/Bogota');
 
-    if (fechaValida(fecha)) {
-      fila.date = fecha;
+    if (fecha.isValid()) {
+      fila.date = fecha.toDate();
       return fila;
     } else {
       throw new Error(

@@ -8,9 +8,7 @@ module.exports = merge(common, {
   devtool: 'inline-source-map',
   target: 'web',
   devServer: {
-    watchOptions: {
-      ignored: '/node_modules/',
-    },
+    static: path.resolve(__dirname, 'public'),
   },
   module: {
     rules: [

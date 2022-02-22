@@ -15,5 +15,10 @@ module.exports = merge(common, {
       },
     ],
   },
-  plugins: [new CleanWebpackPlugin(), new MiniCssExtractPlugin()],
+  plugins: [
+    new CleanWebpackPlugin({
+      cleanOnceBeforeBuildPatterns: ['**/*', '!datos/**'],
+    }),
+    new MiniCssExtractPlugin(),
+  ],
 });
