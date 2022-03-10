@@ -56,19 +56,21 @@ export const limpiarDatos = (csv, llaveFecha) => {
     const fecha = dayjs.tz(fechaTexto, 'America/Bogota');
 
     if (fecha.isValid()) {
-      fila.date = fecha.toDate();
+      fila.fecha = fecha.toDate();
 
       for (let llave in fila) {
-        if (!isNaN(fila[llave]) && llave !== 'date') {
+        if (!isNaN(fila[llave]) && llave !== 'fecha') {
           fila[llave] = +fila[llave];
         }
       }
+
+      fila.i = i;
 
       return fila;
     } else {
       throw new Error(
         `La fecha en la fila ${i} no es valida, debe estar en formato "YYYY-MM-DD" y esta así: ${JSON.stringify(
-          fila.date
+          fila.fecha
         )}`
       );
     }

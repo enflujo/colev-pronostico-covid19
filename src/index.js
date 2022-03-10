@@ -1,12 +1,11 @@
 import './scss/styles.scss';
 import { diferir, limpiarDatos } from './utilidades/ayudas';
 import { csv as fetchCSV } from 'd3-fetch';
-import { scaleLinear, scaleTime } from 'd3-scale';
-import { select } from 'd3-selection';
-import { axisBottom, axisLeft } from 'd3-axis';
-import { area, line } from 'd3-shape';
 import { brushX } from 'd3-brush';
 import { max } from 'd3-array';
+import GraficaPrincipal from './componentes/GraficaPrincipal';
+
+const grafica = new GraficaPrincipal();
 
 const registroSemanal = [];
 let muertesEstimado = [];
@@ -15,45 +14,17 @@ let casosComprobados = [];
 let casosPreliminares = [];
 let fechaInicial;
 let fechaFinal;
-let ejeX;
-let ejeY;
 
-const muertesBtn = document.getElementById('muertes');
 const dims = { superior: 100, derecha: 30, inferior: 150, izquierda: 60 };
 dims.margenHorizontal = dims.derecha + dims.izquierda;
 dims.margenVertical = dims.superior + dims.inferior;
 
 const contenedorGrafica = document.getElementById('grafica');
-const svg = select(contenedorGrafica).append('svg');
-const grafica = svg.append('g');
-const indicadorX = grafica.append('g');
-const indicadorY = grafica.append('g');
-const lineaIndicador = grafica.append('path').attr('fill', 'none').attr('stroke', 'red').attr('stroke-width', 1.5);
-
-const rojoClaro = '#d6a09f';
-const rojoMenosClaro = '#cc8785';
-const rojoOscuro = '#c57876';
 
 function actualizarDimensiones() {
   dims.ancho = contenedorGrafica.scrollWidth - dims.margenHorizontal;
   dims.alto = contenedorGrafica.scrollHeight - dims.margenVertical;
-
-  svg.attr('width', dims.ancho + dims.margenHorizontal).attr('height', dims.alto + dims.margenVertical);
-  grafica.attr('transform', `translate(${dims.izquierda},${dims.superior})`);
-  indicadorX.attr('transform', `translate(0, ${dims.alto})`);
-
-  console.log(dims);
-}
-
-function actualizarEjeX(dominio) {
-  ejeX = scaleTime().domain(dominio).range([0, dims.ancho]);
-  indicadorX.transition().duration(500).call(axisBottom(ejeX));
-}
-
-function actualizarEjeY(dominio) {
-  ejeY = scaleLinear().domain(dominio).range([dims.alto, 0]);
-
-  indicadorY.transition().duration(500).call(axisLeft(ejeY));
+  grafica.escalar(dims);
 }
 
 async function inicio() {
@@ -65,20 +36,21 @@ async function inicio() {
   let contador = 0;
   let contadorCasos = 0;
   let contadorMuertes = 0;
-  let fechaInicio = casos[0].date;
+  let fechaInicio = casos[0].fecha;
+  let contadorI = 0;
 
   for (let i = 0; i < casos.length; i++) {
     const dia = casos[i];
     if (contador === 6) {
       registroSemanal.push({
         fechaInicial: fechaInicio,
-        fechaFinal: dia.date,
+        fechaFinal: dia.fecha,
         casos: contadorCasos,
         muertes: contadorMuertes,
       });
       contadorCasos = 0;
       contadorMuertes = 0;
-      fechaInicio = dia.date;
+      fechaInicio = dia.fecha;
     } else {
       contadorCasos += dia.num_cases;
       contadorMuertes += dia.num_diseased;
@@ -91,16 +63,18 @@ async function inicio() {
   muertesPrediccion = muertes.filter((caso) => caso.type === 'forecast');
   casosComprobados = casos.filter((caso) => caso.type === 'fitted');
   casosPreliminares = casos.filter((caso) => caso.type === 'preliminary');
-  fechaInicial = muertes[0].date;
-  fechaFinal = muertes[muertes.length - 1].date;
+  fechaInicial = muertes[0].fecha;
+  fechaFinal = muertes[muertes.length - 1].fecha;
 
-  actualizarEjeX([fechaInicial, fechaFinal]);
-  actualizarEjeY([0, max(registroSemanal.map((obj) => obj.muertes))]);
+  grafica.dominioX = [fechaInicial, fechaFinal];
+  grafica.conectarDatos(registroSemanal);
+
+  grafica.actualizarEjeX().actualizarEjeY([0, max(registroSemanal.map((obj) => obj.muertes))]);
+
   dibujar();
 }
 
-function dibujar(indicador) {
-  indicador = indicador || 'muertes';
+function dibujar(indicador = 'muertes') {
   // const clip = grafica
   //   .append('defs')
   //   .append('svg:clipPath')
@@ -126,7 +100,7 @@ function dibujar(indicador) {
   //   .attr(
   //     'd',
   //     area()
-  //       .x((d) => x(d.date))
+  //       .x((d) => x(d.fecha))
   //       .y0((d) => y(d.low_95))
   //       .y1((d) => y(d.high_95))
   //   );
@@ -140,7 +114,7 @@ function dibujar(indicador) {
   //   .attr(
   //     'd',
   //     line()
-  //       .x((d) => x(d.date))
+  //       .x((d) => x(d.fecha))
   //       .y((d) => y(d.median))
   //   );
 
@@ -148,16 +122,7 @@ function dibujar(indicador) {
    * Linea de muertes
    */
 
-  lineaIndicador
-    .datum(registroSemanal)
-    .transition()
-    .duration(500)
-    .attr(
-      'd',
-      line()
-        .x((d) => ejeX(d.fechaInicial))
-        .y((d) => ejeY(indicador === 'muertes' ? d.muertes : d.casos))
-    );
+  grafica.dibujar(indicador);
 
   // grafica
   //   .selectAll('casos')
@@ -239,11 +204,9 @@ opcionMuertes.onclick = () => {
 
 indicadorBtn.onchange = () => {
   if (bo) {
-    actualizarEjeY([0, max(registroSemanal.map((obj) => obj.muertes))]);
-    dibujar('muertes');
+    grafica.actualizarEjeY([0, max(registroSemanal.map((obj) => obj.muertes))]).dibujar('muertes');
   } else {
-    actualizarEjeY([0, max(registroSemanal.map((obj) => obj.casos))]);
-    dibujar('casos');
+    grafica.actualizarEjeY([0, max(registroSemanal.map((obj) => obj.casos))]).dibujar('casos');
   }
   bo = !bo;
 };
