@@ -45,7 +45,7 @@ export const mesATexto = (mes) => {
 };
 
 /**
- * Valida y limpia los datos. (De momento simplemente valida fechas)
+ * Valida y limpia los datos.
  *
  * @param {Array} csv Datos a limpiar.
  * @returns El mismo array procesado y validado.
@@ -57,6 +57,13 @@ export const limpiarDatos = (csv, llaveFecha) => {
 
     if (fecha.isValid()) {
       fila.date = fecha.toDate();
+
+      for (let llave in fila) {
+        if (!isNaN(fila[llave]) && llave !== 'date') {
+          fila[llave] = +fila[llave];
+        }
+      }
+
       return fila;
     } else {
       throw new Error(
@@ -66,4 +73,22 @@ export const limpiarDatos = (csv, llaveFecha) => {
       );
     }
   });
+};
+
+/**
+ * Difiere la ejecución de una función por un tiempo determinado.
+ * Útil para diferir la ejecución de eventos que se activan muy frecuentemente como el cambio de tamaño de la pantalla.
+ *
+ * @param {Function} func Función que se ejecuta al final
+ * @param {Number} tiempo Cuanto tiempo esperar entre para ejecutar la función
+ * @returns {Function} algo
+ */
+export const diferir = (func, tiempo) => {
+  tiempo = tiempo || 100;
+  let reloj;
+
+  return (e) => {
+    if (reloj) clearTimeout(reloj);
+    reloj = setTimeout(func, tiempo, e);
+  };
 };

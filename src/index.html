@@ -4,16 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Título</title>
+    <title>Pronostico Covid-19 en Colombia</title>
   </head>
   <body>
-    <div id="grafica"></div>
-    <canvas id="lienzo"></canvas>
-    <!-- <canvas id="zoom"></canvas> -->
-    <canvas id="forecastLienzo"></canvas>
+    <header>
+      <span id="opcionCasos" class="tipoIndicador">Casos</span>
+      <input type="checkbox" hidden="hidden" checked id="indicador" autocomplete="off" />
+      <label class="switch" for="indicador"></label>
+      <span id="opcionMuertes" class="tipoIndicador">Muertes</span>
+    </header>
 
-    <canvas id="tip" width="100" height="25"></canvas>
-    <div id="leyenda">
+    <main>
+      <div id="grafica"></div>
+    </main>
+
+    <footer>creditos</footer>
+
+    <!-- <div id="leyenda">
       <div id="medianNow" class="seccion">
         <span class="linea"></span>
         <span class="nombre">Median - Nowcast</span>
@@ -43,6 +50,6 @@
         <span class="rango"></span>
         <span class="nombre">50% CI</span>
       </div>
-    </div>
+    </div> -->
   </body>
 </html>

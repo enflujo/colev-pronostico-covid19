@@ -2104,7 +2104,7 @@ csv-loader@^3.0.3:
     loader-utils "^2.0.0"
     papaparse "^5.2.0"
 
-"d3-array@2 - 3", "d3-array@2.10.0 - 3":
+"d3-array@2 - 3", "d3-array@2.10.0 - 3", d3-array@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-3.1.1.tgz#7797eb53ead6b9083c75a45a681e93fc41bc468c"
   integrity sha512-33qQ+ZoZlli19IFiQx4QEpf2CBEayMRzhlisJHSCsSUbDXv6ZishqS1x7uFVClKG4Wr7rZVHvaAttoLow6GqdQ==
