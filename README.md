@@ -1,3 +1,5 @@
-# Plantilla: Webpack, Babel y SASS
+# Pronostico de Covid-19 en Colombia
 
-Configuración básica para iniciar proyectos y experimentos.
+https://www.d3-graph-gallery.com/graph/line_cursor.html
+
+https://observablehq.com/@d3/focus-context
