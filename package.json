@@ -6,7 +6,9 @@
   "license": "MIT",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
-    "start": "webpack serve --config webpack.dev.js"
+    "start": "webpack serve --config webpack.dev.js",
+    "lint": "prettier --check .",
+    "lint:fix": "prettier --write --list-different ."
   },
   "devDependencies": {
     "@babel/core": "^7.17.5",
