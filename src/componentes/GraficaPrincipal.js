@@ -2,95 +2,161 @@ import { select, pointer } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { line } from 'd3-shape';
-import { bisector } from 'd3-array';
+import { bisector, max } from 'd3-array';
+import { timeWeek } from 'd3-time';
+import { transition } from 'd3-transition';
 
-export default class {
-  constructor() {
-    this.contenedor = document.getElementById('grafica');
-    this.svg = select(this.contenedor).append('svg');
-    this.vis = this.svg.append('g');
+/**
+ *
+ */
+export default class GraficaPrincipal {
+  datos;
+  dims;
+  indicador = 'muertes';
+  resolucion = 'semanal';
+  /**
+   *
+   * @param {HTMLElement} contenedor Contenedor donde ubicar la gráfica.
+   */
+  constructor(contenedor) {
+    this.svg = select(contenedor).append('svg');
+    this.vis = this.svg.append('g').attr('class', 'visualizacionPrincipal');
     this.indicadorX = this.vis.append('g');
     this.indicadorY = this.vis.append('g');
-    this.linea = this.vis.append('path').attr('fill', 'none').attr('stroke', 'red').attr('stroke-width', 1.5);
-    this.foco = this.vis
-      .append('g')
-      .append('circle')
-      .style('fill', 'none')
-      .attr('stroke', 'black')
-      .attr('r', 8.5)
-      .style('opacity', 0);
-    this.interseccionX = bisector((d) => d.i).left;
-    this.dims;
-    this.datos;
-    this.ejeX;
-    this.ejeY;
-    this.indicesX;
+    this.puntosCasos = this.vis.append('g').attr('class', 'puntos');
+    this.linea = this.vis.append('path').attr('class', 'lineaPrincipal sinFondo');
+    this.lineaPreliminar = this.vis.append('path').attr('class', 'lineaPreliminar sinFondo');
+    this.foco = this.vis.append('circle').attr('class', 'foco sinFondo').attr('r', 8.5);
 
-    this.contenedor.onmouseover = this._sobreGrafica;
-    this.contenedor.onmouseout = this._salidaDeGrafica;
-    this.contenedor.onmousemove = this._movSobreGrafica;
+    this.ejeX = scaleTime();
+    this.ejeY = scaleLinear();
+
+    this.areaInteraccion = this.vis
+      .append('rect')
+      .attr('class', 'areaInteraccion sinFondo')
+      .on('mouseover', this.#sobreGrafica)
+      .on('mouseout', this.#salidaDeGrafica)
+      .on('mousemove', this.#movSobreGrafica);
   }
 
-  _sobreGrafica = () => {
+  #interseccionX = bisector((d) => d.fecha).left;
+  #posX = (d) => this.ejeX(d.fecha);
+  #posY = (d) => this.ejeY(d[this.indicador]);
+  #radioPuntos = () => (this.resolucion === 'semanal' ? 3.5 : 1.5);
+  #attrLinea = (grupo) => {
+    grupo
+      .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
+      .attr('d', line().x(this.#posX).y(this.#posY));
+  };
+
+  #sobreGrafica = (e) => {
+    e.stopPropagation();
     this.foco.style('opacity', 1);
   };
 
-  _salidaDeGrafica = () => {
+  #salidaDeGrafica = (e) => {
+    e.stopPropagation();
     this.foco.style('opacity', 0);
   };
 
-  _movSobreGrafica = (e) => {
+  #movSobreGrafica = (e) => {
+    e.stopPropagation();
     if (!this.ejeX) return;
-    const x0 = this.indicesX.invert(pointer(e)[0]);
-    const i = this.interseccionX(this.datos, x0, 1);
-    const selectedData = this.datos[i];
-    console.log(x0, i);
-    // this.foco.attr('cx', this.ejeX(selectedData.fecha)); // .attr('cy', y(selectedData.y))
-    // focusText
-    //   .html('x:' + selectedData.x + '  -  ' + 'y:' + selectedData.y)
-    //   .attr('x', x(selectedData.x) + 15)
-    //   .attr('y', y(selectedData.y));
+    const datos = this.datos.casos[this.resolucion];
+    const x0 = this.ejeX.invert(pointer(e)[0]);
+    const i = this.#interseccionX(datos.ajustados, x0);
+    const registro = datos.ajustados[i];
+
+    if (registro) {
+      this.foco.attr('cx', this.ejeX(registro.fecha)).attr('cy', this.ejeY(registro[this.indicador]));
+    }
   };
 
   escalar(dims) {
-    this.dims = dims;
-    this.svg.attr('width', dims.ancho + dims.margenHorizontal).attr('height', dims.alto + dims.margenVertical);
+    const { ancho, alto } = dims;
+    this.svg.attr('width', ancho + dims.margenHorizontal).attr('height', alto + dims.margenVertical);
     this.vis.attr('transform', `translate(${dims.izquierda},${dims.superior})`);
-    this.indicadorX.attr('transform', `translate(0, ${dims.alto})`);
+    this.indicadorX.attr('transform', `translate(0, ${alto})`);
+    this.areaInteraccion.attr('width', ancho).attr('height', alto);
+
+    if (this.datos) {
+      this.actualizarEjeX();
+      this.actualizarEjeY();
+      this.dibujar();
+    }
+
+    this.dims = dims;
+    // if (this.datos) this.dibujar();
     return this;
   }
 
   actualizarEjeX(duracion = 500) {
-    this.ejeX = scaleTime().domain(this.dominioX).range([0, this.dims.ancho]);
-    this.indicadorX.transition().duration(duracion).call(axisBottom(this.ejeX));
+    this.ejeX.domain([this.datos.fechaInicial, this.datos.fechaFinal]).range([0, this.dims.ancho]);
+    this.indicadorX
+      .transition()
+      .duration(duracion)
+      .call(axisBottom(this.ejeX).ticks(timeWeek.every(4)));
 
     return this;
   }
 
-  actualizarEjeY(dominio, duracion = 500) {
-    this.ejeY = scaleLinear().domain(dominio).range([this.dims.alto, 0]);
+  actualizarEjeY(duracion = 500) {
+    this.ejeY
+      .domain([0, max(this.datos.casos[this.resolucion].ajustados.map((obj) => obj[this.indicador]))])
+      .range([this.dims.alto, 0]);
     this.indicadorY.transition().duration(duracion).call(axisLeft(this.ejeY));
     return this;
   }
 
-  dibujar(indicador, duracion = 500) {
-    this.linea
-      .datum(this.datos)
-      .transition()
-      .duration(duracion)
-      .attr(
-        'd',
-        line()
-          .x((d) => this.ejeX(d.fechaInicial))
-          .y((d) => this.ejeY(indicador === 'muertes' ? d.muertes : d.casos))
-      );
+  dibujar(duracion = 500) {
+    const transicion = transition().duration(duracion);
+    const datos = this.datos.casos[this.resolucion];
 
+    this.linea.datum(datos.ajustados).transition(transicion);
+    this.#attrLinea(this.linea);
+
+    this.lineaPreliminar.datum(datos.preliminar).transition(transicion);
+    this.#attrLinea(this.lineaPreliminar);
+
+    this.puntosCasos
+      .selectAll('circle')
+      .data(datos.ajustados)
+      .join(
+        (enter) =>
+          enter
+            .append('circle')
+            .attr('class', 'caso')
+            .attr('cx', this.#posX)
+            .attr('cy', this.#posY)
+            .call((enter) => enter.transition(transicion).attr('r', this.#radioPuntos)),
+        (update) =>
+          update.call((update) =>
+            update.transition(transicion).attr('cx', this.#posX).attr('cy', this.#posY).attr('r', this.#radioPuntos)
+          ),
+        (exit) =>
+          exit.call((exit) =>
+            exit
+              .transition()
+              .duration(500 / 2)
+              .attr('r', 0)
+              .remove()
+          )
+      );
     return this;
   }
 
   conectarDatos(datos) {
     this.datos = datos;
-    this.indicesX = scaleLinear().domain(this.dominioX).range([0, this.datos.length]);
-    console.log(this.indicesX);
+    return this;
+  }
+
+  cambiarIndicador(indicador) {
+    this.indicador = indicador;
+    return this;
+  }
+
+  cambiarResolucion(resolucion) {
+    this.resolucion = resolucion;
+    return this;
   }
 }
