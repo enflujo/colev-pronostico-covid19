@@ -1,10 +1,3 @@
-import dayjs from 'dayjs';
-import UTC from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(UTC);
-dayjs.extend(timezone);
-
 export const fechaValida = (fecha) => {
   return fecha instanceof Date && !isNaN(fecha);
 };
@@ -42,39 +35,6 @@ export const mesATexto = (mes) => {
       month: 'short',
     })
     .toString();
-};
-
-/**
- * Valida y limpia los datos.
- *
- * @param {Array} csv Datos a limpiar.
- * @returns El mismo array procesado y validado.
- */
-export const limpiarDatos = (csv, llaveFecha) => {
-  return csv.map((fila, i) => {
-    const fechaTexto = fila.hasOwnProperty('date') ? fila.date : fila.date_time;
-    const fecha = dayjs.tz(fechaTexto, 'America/Bogota');
-
-    if (fecha.isValid()) {
-      fila.fecha = fecha.toDate();
-
-      for (let llave in fila) {
-        if (!isNaN(fila[llave]) && llave !== 'fecha') {
-          fila[llave] = +fila[llave];
-        }
-      }
-
-      fila.i = i;
-
-      return fila;
-    } else {
-      throw new Error(
-        `La fecha en la fila ${i} no es valida, debe estar en formato "YYYY-MM-DD" y esta así: ${JSON.stringify(
-          fila.fecha
-        )}`
-      );
-    }
-  });
 };
 
 /**

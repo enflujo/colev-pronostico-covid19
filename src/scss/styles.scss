@@ -128,7 +128,7 @@ $btnDiametro: 18px;
   }
 }
 
-#indicador {
+.entradaSwitch {
   &:checked + .switch {
     background: #72da67;
   }
@@ -140,4 +140,30 @@ $btnDiametro: 18px;
   &:checked + .switch:active::before {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 20px rgba(0, 150, 136, 0.2);
   }
+}
+
+.caso {
+  fill: rgba(0, 150, 136, 0.5);
+  stroke: none;
+}
+
+.sinFondo {
+  fill: none;
+}
+
+.areaInteraccion {
+  pointer-events: all;
+}
+
+.foco {
+  stroke: black;
+  opacity: 0;
+}
+
+.lineaPrincipal {
+  stroke: black;
+}
+
+.lineaPreliminar {
+  stroke: red;
 }

@@ -4,18 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Pronostico Covid-19 en Colombia</title>
+    <title>Pronóstico Covid-19 en Colombia</title>
   </head>
   <body>
     <header>
       <span id="opcionCasos" class="tipoIndicador">Casos</span>
-      <input type="checkbox" hidden="hidden" checked id="indicador" autocomplete="off" />
+      <input class="entradaSwitch" type="checkbox" hidden="hidden" checked id="indicador" autocomplete="off" />
       <label class="switch" for="indicador"></label>
       <span id="opcionMuertes" class="tipoIndicador">Muertes</span>
+
+      <span id="opcionDias" class="tipoIndicador">Días</span>
+      <input class="entradaSwitch" type="checkbox" hidden="hidden" checked id="resolucion" autocomplete="off" />
+      <label class="switch" for="resolucion"></label>
+      <span id="opcionSemanas" class="tipoIndicador">Semanas</span>
     </header>
 
     <main>
       <div id="grafica"></div>
+      <div id="zoom"></div>
     </main>
 
     <footer>creditos</footer>

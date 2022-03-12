@@ -1,80 +1,40 @@
 import './scss/styles.scss';
-import { diferir, limpiarDatos } from './utilidades/ayudas';
-import { csv as fetchCSV } from 'd3-fetch';
-import { brushX } from 'd3-brush';
-import { max } from 'd3-array';
+import { diferir } from './utilidades/ayudas';
+import componerDatos from './utilidades/componerDatos';
 import GraficaPrincipal from './componentes/GraficaPrincipal';
 
-const grafica = new GraficaPrincipal();
-
-const registroSemanal = [];
-let muertesEstimado = [];
-let muertesPrediccion = [];
-let casosComprobados = [];
-let casosPreliminares = [];
-let fechaInicial;
-let fechaFinal;
-
+const contenedorGrafica = document.getElementById('grafica');
+const indicadorBtn = document.getElementById('indicador');
+const resolucionBtn = document.getElementById('resolucion');
+const grafica = new GraficaPrincipal(contenedorGrafica);
+console.log(grafica);
 const dims = { superior: 100, derecha: 30, inferior: 150, izquierda: 60 };
 dims.margenHorizontal = dims.derecha + dims.izquierda;
 dims.margenVertical = dims.superior + dims.inferior;
 
-const contenedorGrafica = document.getElementById('grafica');
+const obtenerResolucion = () => (resolucionBtn.checked ? 'semanal' : 'diario');
+const obtenerIndicador = () => (indicadorBtn.checked ? 'muertes' : 'casos');
 
 function actualizarDimensiones() {
-  dims.ancho = contenedorGrafica.scrollWidth - dims.margenHorizontal;
-  dims.alto = contenedorGrafica.scrollHeight - dims.margenVertical;
+  dims.ancho = contenedorGrafica.offsetWidth - dims.margenHorizontal;
+  dims.alto = contenedorGrafica.offsetHeight - dims.margenVertical;
   grafica.escalar(dims);
 }
 
 async function inicio() {
-  const datosMuertes = await fetchCSV('/datos/deaths_df.csv');
-  const datosCasos = await fetchCSV('/datos/cases.csv');
-  const muertes = limpiarDatos(datosMuertes);
-  const casos = limpiarDatos(datosCasos);
+  const datos = await componerDatos();
 
-  let contador = 0;
-  let contadorCasos = 0;
-  let contadorMuertes = 0;
-  let fechaInicio = casos[0].fecha;
-  let contadorI = 0;
-
-  for (let i = 0; i < casos.length; i++) {
-    const dia = casos[i];
-    if (contador === 6) {
-      registroSemanal.push({
-        fechaInicial: fechaInicio,
-        fechaFinal: dia.fecha,
-        casos: contadorCasos,
-        muertes: contadorMuertes,
-      });
-      contadorCasos = 0;
-      contadorMuertes = 0;
-      fechaInicio = dia.fecha;
-    } else {
-      contadorCasos += dia.num_cases;
-      contadorMuertes += dia.num_diseased;
-    }
-
-    contador = (contador + 1) % 7;
-  }
-
-  muertesEstimado = muertes.filter((caso) => caso.type === 'estimate');
-  muertesPrediccion = muertes.filter((caso) => caso.type === 'forecast');
-  casosComprobados = casos.filter((caso) => caso.type === 'fitted');
-  casosPreliminares = casos.filter((caso) => caso.type === 'preliminary');
-  fechaInicial = muertes[0].fecha;
-  fechaFinal = muertes[muertes.length - 1].fecha;
-
-  grafica.dominioX = [fechaInicial, fechaFinal];
-  grafica.conectarDatos(registroSemanal);
-
-  grafica.actualizarEjeX().actualizarEjeY([0, max(registroSemanal.map((obj) => obj.muertes))]);
+  grafica
+    .cambiarIndicador(obtenerIndicador())
+    .cambiarResolucion(obtenerResolucion())
+    .conectarDatos(datos)
+    .actualizarEjeX()
+    .actualizarEjeY();
 
   dibujar();
 }
 
-function dibujar(indicador = 'muertes') {
+function dibujar() {
   // const clip = grafica
   //   .append('defs')
   //   .append('svg:clipPath')
@@ -122,7 +82,7 @@ function dibujar(indicador = 'muertes') {
    * Linea de muertes
    */
 
-  grafica.dibujar(indicador);
+  grafica.dibujar();
 
   // grafica
   //   .selectAll('casos')
@@ -186,11 +146,12 @@ function dibujar(indicador = 'muertes') {
 
 actualizarDimensiones();
 inicio();
-let bo = false;
-
 const opcionCasos = document.getElementById('opcionCasos');
 const opcionMuertes = document.getElementById('opcionMuertes');
-const indicadorBtn = document.getElementById('indicador');
+
+resolucionBtn.onchange = () => {
+  grafica.cambiarResolucion(obtenerResolucion()).actualizarEjeY().dibujar(0);
+};
 
 opcionCasos.onclick = () => {
   if (!indicadorBtn.checked) return;
@@ -203,12 +164,7 @@ opcionMuertes.onclick = () => {
 };
 
 indicadorBtn.onchange = () => {
-  if (bo) {
-    grafica.actualizarEjeY([0, max(registroSemanal.map((obj) => obj.muertes))]).dibujar('muertes');
-  } else {
-    grafica.actualizarEjeY([0, max(registroSemanal.map((obj) => obj.casos))]).dibujar('casos');
-  }
-  bo = !bo;
+  grafica.cambiarIndicador(obtenerIndicador()).actualizarEjeY().dibujar();
 };
 
 window.addEventListener('resize', diferir(actualizarDimensiones, 150));
