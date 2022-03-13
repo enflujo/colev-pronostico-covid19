@@ -4,8 +4,6 @@ import componerDatos from './utilidades/componerDatos';
 import GraficaPrincipal from './componentes/GraficaPrincipal';
 import fechas from './utilidades/fechas';
 
-timeFormatDefaultLocale(fechas);
-
 const contenedorGrafica = document.getElementById('grafica');
 
 const grafica = new GraficaPrincipal(contenedorGrafica);
