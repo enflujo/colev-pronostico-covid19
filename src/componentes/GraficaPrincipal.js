@@ -3,18 +3,18 @@ import { scaleLinear, scaleTime } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { line } from 'd3-shape';
 import { bisector, max } from 'd3-array';
-import { timeWeek } from 'd3-time';
+import { timeMonth, timeYear } from 'd3-time';
 import { transition } from 'd3-transition';
+import { timeFormat } from 'd3-time-format';
 
-/**
- *
- */
 export default class GraficaPrincipal {
   datos;
   dims;
   indicador = 'muertes';
   resolucion = 'semanal';
+
   /**
+   * Crea la gráfica principal.
    *
    * @param {HTMLElement} contenedor Contenedor donde ubicar la gráfica.
    */
@@ -95,7 +95,17 @@ export default class GraficaPrincipal {
     this.indicadorX
       .transition()
       .duration(duracion)
-      .call(axisBottom(this.ejeX).ticks(timeWeek.every(4)));
+      .call(
+        axisBottom(this.ejeX).tickFormat((fecha) => {
+          console.log(fecha, timeYear(fecha), timeFormat('%b')(fecha));
+          if (timeYear(fecha)) {
+            return timeFormat('%b')(fecha);
+          } else {
+            return timeFormat('%Y')(fecha);
+          }
+        })
+        // .ticks(timeMonth.every(1))
+      );
 
     return this;
   }

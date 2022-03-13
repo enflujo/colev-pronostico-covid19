@@ -1,7 +1,11 @@
 import './scss/styles.scss';
+import { timeFormatDefaultLocale } from 'd3-time-format';
 import { diferir } from './utilidades/ayudas';
 import componerDatos from './utilidades/componerDatos';
 import GraficaPrincipal from './componentes/GraficaPrincipal';
+import fechas from './utilidades/fechas';
+
+timeFormatDefaultLocale(fechas);
 
 const contenedorGrafica = document.getElementById('grafica');
 const indicadorBtn = document.getElementById('indicador');
