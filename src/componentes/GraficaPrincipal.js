@@ -21,8 +21,8 @@ export default class GraficaPrincipal {
   constructor(contenedor) {
     this.svg = select(contenedor).append('svg');
     this.vis = this.svg.append('g').attr('class', 'visualizacionPrincipal');
-    this.indicadorX = this.vis.append('g');
-    this.indicadorY = this.vis.append('g');
+    this.indicadorX = this.vis.append('g').attr('class', 'eje');
+    this.indicadorY = this.vis.append('g').attr('class', 'eje');
     this.puntosCasos = this.vis.append('g').attr('class', 'puntos');
     this.linea = this.vis.append('path').attr('class', 'lineaPrincipal sinFondo');
     this.lineaPreliminar = this.vis.append('path').attr('class', 'lineaPreliminar sinFondo');
