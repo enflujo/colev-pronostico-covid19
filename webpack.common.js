@@ -30,26 +30,8 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|gif)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: '[name].[contenthash].[ext]',
-              outputPath: 'imgs/',
-              publicPath: 'imgs/',
-            },
-          },
-        ],
-      },
-      {
-        test: /\.csv$/,
-        loader: 'csv-loader',
-        options: {
-          dynamicTyping: true,
-          header: true,
-          skipEmptyLines: true,
-        },
+        test: /\.(png|svg|jpg|jpeg|gif)$/,
+        type: 'asset/resource',
       },
     ],
   },

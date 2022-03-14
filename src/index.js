@@ -1,5 +1,4 @@
-import './scss/styles.scss';
-import { timeFormatDefaultLocale } from 'd3-time-format';
+import './scss/estilos.scss';
 import { diferir } from './utilidades/ayudas';
 import componerDatos from './utilidades/componerDatos';
 import GraficaPrincipal from './componentes/GraficaPrincipal';
