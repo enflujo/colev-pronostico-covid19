@@ -1,23 +1,26 @@
-html {
-  box-sizing: border-box;
-  height: 100%;
+@import './normalizar';
+@import './constantes';
+@import './funciones';
+@import './pantallas/base';
+
+// Teléfonos horizontal
+@media (min-width: $minCelular) {
+  @import './pantallas/celulares';
 }
 
-*,
-*:before,
-*:after {
-  box-sizing: inherit;
+// Pantallas medianas (Tablets)
+@media (min-width: $minTablet) {
+  @import './pantallas/tabletas';
 }
 
-html,
-body {
-  margin: 0;
-  padding: 0;
+// Dispositivos grandes y pantallas medianas
+@media (min-width: $minPantalla) {
+  @import './pantallas/pantallasMedianas';
 }
 
-#grafica {
-  width: 70vw;
-  height: 80vh;
+// Pantallas grandes
+@media (min-width: $minPantallaGrande) {
+  @import './pantallas/pantallasGrandes';
 }
 
 #leyenda {
@@ -166,4 +169,43 @@ $btnDiametro: 18px;
 
 .lineaPreliminar {
   stroke: red;
+}
+
+#creditos {
+  display: flex;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 0;
+  height: 90px;
+  background-color: #cce4e4;
+  color: #072b2b;
+  width: 100%;
+
+  section {
+    padding: 0.5em 1em;
+  }
+
+  .logos {
+    display: flex;
+
+    a {
+      margin-right: 1.5em;
+      transition: 0.15s ease-in-out;
+
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+
+    .logo {
+      height: auto;
+      display: block;
+      height: 40px;
+    }
+  }
+
+  h3 {
+    font-size: 0.9em;
+    margin: 0 0 10px 0;
+  }
 }

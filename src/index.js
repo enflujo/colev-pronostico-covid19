@@ -1,4 +1,4 @@
-import './scss/styles.scss';
+import './scss/estilos.scss';
 import { diferir } from './utilidades/ayudas';
 import componerDatos from './utilidades/componerDatos';
 import GraficaPrincipal from './componentes/GraficaPrincipal';
