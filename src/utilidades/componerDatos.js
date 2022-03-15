@@ -18,18 +18,19 @@ export default async () => {
   const muertes = limpiarDatos(datosMuertes, 'deaths');
   const casos = limpiarDatos(datosCasos, 'cases');
 
-  datos.intervalos.estimados = muertes.filter((caso) => caso.tipo === 'estimado');
-  datos.intervalos.pronostico = muertes.filter((caso) => caso.tipo === 'pronostico');
-  datos.casos.diario = {
-    ajustados: casos.filter((caso) => caso.tipo === 'ajustado'),
-    preliminar: casos.filter((caso) => caso.tipo === 'preliminar'),
+  datos.intervalos.diario = {
+    estimados: muertes.filter((caso) => caso.tipo === 'estimado'),
+    pronostico: muertes.filter((caso) => caso.tipo === 'pronostico'),
   };
-  const semanalA = normalizarSemanal(datos.casos.diario.ajustados);
-  datos.casos.semanal = {
-    ajustados: semanalA,
-    // Incluir el último de los ajustados para iniciar linea de preliminares desde ese punto.
-    preliminar: [semanalA[semanalA.length - 1], ...normalizarSemanal(datos.casos.diario.preliminar)],
+  const semanalB = normalizarSemanal2(datos.intervalos.diario.estimados);
+
+  datos.intervalos.semanal = {
+    estimados: semanalB,
+    pronostico: normalizarSemanal2(datos.intervalos.diario.pronostico),
   };
+
+  datos.casos.diario = casos;
+  datos.casos.semanal = normalizarSemanal(casos);
 
   datos.fechaInicial = muertes[0].fecha;
   datos.fechaFinal = muertes[muertes.length - 1].fecha;
@@ -109,6 +110,32 @@ function normalizarSemanal(datos) {
       inicioSemana = i < datos.length - 2 ? datos[i + 1].fecha : null;
       casosSemana = 0;
       muertesSemana = 0;
+      contadorI++;
+    }
+  });
+  return registrosSemanales;
+}
+
+function normalizarSemanal2(datos) {
+  const registrosSemanales = [];
+  let inicioSemana = datos[0].fecha;
+  let casosSemana = 0;
+  let contadorI = 0;
+
+  datos.forEach((dia, i) => {
+    casosSemana += dia.promedio;
+
+    // 0 es Domingo, agregar semana y reiniciar los contadores
+    if (dia.fecha.getDay() === 0) {
+      registrosSemanales.push({
+        fecha: inicioSemana,
+        fechaFinal: dia.fecha,
+        promedio: casosSemana,
+        i: contadorI,
+      });
+
+      inicioSemana = i < datos.length - 2 ? datos[i + 1].fecha : null;
+      casosSemana = 0;
       contadorI++;
     }
   });
