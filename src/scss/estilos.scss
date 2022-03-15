@@ -1,0 +1,186 @@
+@import './normalizar';
+@import './constantes';
+@import './funciones';
+@import './pantallas/base';
+
+// Teléfonos horizontal
+@media (min-width: $minCelular) {
+  @import './pantallas/celulares';
+}
+
+// Pantallas medianas (Tablets)
+@media (min-width: $minTablet) {
+  @import './pantallas/tabletas';
+}
+
+// Dispositivos grandes y pantallas medianas
+@media (min-width: $minPantalla) {
+  @import './pantallas/pantallasMedianas';
+}
+
+// Pantallas grandes
+@media (min-width: $minPantallaGrande) {
+  @import './pantallas/pantallasGrandes';
+}
+
+#leyenda {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9em;
+  position: fixed;
+  border: 2px solid #d3d3d3;
+  padding: 0.5em;
+  left: 100px;
+  display: flex;
+  flex-direction: column;
+
+  .seccion {
+    display: flex;
+    align-items: center;
+    margin: 0.2em 0;
+    cursor: pointer;
+  }
+
+  .linea,
+  .rango {
+    width: 40px;
+    margin-right: 15px;
+  }
+
+  .linea {
+    height: 2px;
+  }
+
+  .rango {
+    height: 12px;
+  }
+
+  #medianNow {
+    .linea {
+      background-color: gray;
+    }
+  }
+
+  #medianForecast {
+    .linea {
+      background-color: #e3bfbe;
+    }
+  }
+
+  #now95 {
+    .rango {
+      background-color: #cbcbcb;
+    }
+  }
+
+  #forecast95 {
+    .rango {
+      background-color: #d6a09f;
+    }
+  }
+
+  #forecast80 {
+    .rango {
+      background-color: #e3bfbe;
+    }
+  }
+
+  #forecast50 {
+    .rango {
+      background-color: #f0d9d9;
+    }
+  }
+}
+
+.puntoCasoComprobado {
+  fill: rgba(0, 0, 0, 0.5);
+}
+
+.tipoIndicador {
+  cursor: pointer;
+}
+
+.caso {
+  fill: rgba(0, 150, 136, 0.5);
+  stroke: none;
+}
+
+.sinFondo {
+  fill: none;
+}
+
+.areaInteraccion {
+  pointer-events: all;
+}
+
+.foco {
+  stroke: black;
+  opacity: 0;
+}
+
+.lineaPrincipal {
+  stroke: black;
+}
+
+.lineaPreliminar {
+  stroke: #5b5b5b;
+}
+
+.lineaPronostico {
+  stroke: red;
+}
+
+#creditos {
+  display: flex;
+  justify-content: space-around;
+  position: fixed;
+  bottom: 0;
+  height: 90px;
+  background-color: #fff7eb;
+  color: #072b2b;
+  width: 100%;
+
+  section {
+    padding: 0.5em 1em;
+  }
+
+  .logos {
+    display: flex;
+
+    a {
+      margin-right: 1.5em;
+      transition: 0.15s ease-in-out;
+
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+
+    .logo {
+      height: auto;
+      display: block;
+      height: 40px;
+    }
+  }
+
+  h3 {
+    font-size: 0.9em;
+    margin: 0 0 10px 0;
+  }
+}
+
+#opciones {
+  display: flex;
+  margin-left: 3em;
+
+  .opcion {
+    margin-right: 1.5em;
+  }
+}
+
+h1 {
+  font-family: $fuentePrincipal;
+
+  color: #072b2b;
+  font-size: 1.3em;
+  text-align: center;
+}

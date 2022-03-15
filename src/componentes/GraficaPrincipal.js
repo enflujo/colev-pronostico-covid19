@@ -21,11 +21,12 @@ export default class GraficaPrincipal {
   constructor(contenedor) {
     this.svg = select(contenedor).append('svg');
     this.vis = this.svg.append('g').attr('class', 'visualizacionPrincipal');
-    this.indicadorX = this.vis.append('g');
-    this.indicadorY = this.vis.append('g');
+    this.indicadorX = this.vis.append('g').attr('class', 'eje');
+    this.indicadorY = this.vis.append('g').attr('class', 'eje');
     this.puntosCasos = this.vis.append('g').attr('class', 'puntos');
     this.linea = this.vis.append('path').attr('class', 'lineaPrincipal sinFondo');
     this.lineaPreliminar = this.vis.append('path').attr('class', 'lineaPreliminar sinFondo');
+    this.lineaPronostico = this.vis.append('path').attr('class', 'lineaPronostico sinFondo');
     this.foco = this.vis.append('circle').attr('class', 'foco sinFondo').attr('r', 8.5);
 
     this.ejeX = scaleTime();
@@ -64,8 +65,8 @@ export default class GraficaPrincipal {
     if (!this.ejeX) return;
     const datos = this.datos.casos[this.resolucion];
     const x0 = this.ejeX.invert(pointer(e)[0]);
-    const i = this.#interseccionX(datos.ajustados, x0);
-    const registro = datos.ajustados[i];
+    const i = this.#interseccionX(datos, x0);
+    const registro = datos[i];
 
     if (registro) {
       this.foco.attr('cx', this.ejeX(registro.fecha)).attr('cy', this.ejeY(registro[this.indicador]));
@@ -102,7 +103,7 @@ export default class GraficaPrincipal {
 
   actualizarEjeY(duracion = 500) {
     this.ejeY
-      .domain([0, max(this.datos.casos[this.resolucion].ajustados.map((obj) => obj[this.indicador]))])
+      .domain([0, max(this.datos.casos[this.resolucion].map((obj) => obj[this.indicador]))])
       .range([this.dims.alto, 0]);
     this.indicadorY.transition().duration(duracion).call(axisLeft(this.ejeY));
     return this;
@@ -111,16 +112,32 @@ export default class GraficaPrincipal {
   dibujar(duracion = 500) {
     const transicion = transition().duration(duracion);
     const datos = this.datos.casos[this.resolucion];
+    const datos2 = this.datos.intervalos[this.resolucion];
 
-    this.linea.datum(datos.ajustados).transition(transicion);
+    this.linea.datum(datos).transition(transicion);
     this.#attrLinea(this.linea);
 
-    this.lineaPreliminar.datum(datos.preliminar).transition(transicion);
-    this.#attrLinea(this.lineaPreliminar);
+    // this.lineaPreliminar.datum(datos.preliminar).transition(transicion);
+    // this.#attrLinea(this.lineaPreliminar);
+
+    if (this.indicador === 'muertes') {
+      this.lineaPronostico
+        .datum(datos2.pronostico)
+        .transition(transicion)
+        .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
+        .attr(
+          'd',
+          line()
+            .x(this.#posX)
+            .y((d) => this.ejeY(d.promedio))
+        );
+    } else {
+      this.lineaPronostico.attr('d', '');
+    }
 
     this.puntosCasos
       .selectAll('circle')
-      .data(datos.ajustados)
+      .data(datos)
       .join(
         (enter) =>
           enter
@@ -147,6 +164,7 @@ export default class GraficaPrincipal {
 
   conectarDatos(datos) {
     this.datos = datos;
+    console.log(datos);
     return this;
   }
 

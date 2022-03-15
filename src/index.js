@@ -1,11 +1,10 @@
-import './scss/styles.scss';
+import './scss/estilos.scss';
 import { diferir } from './utilidades/ayudas';
 import componerDatos from './utilidades/componerDatos';
 import GraficaPrincipal from './componentes/GraficaPrincipal';
 
 const contenedorGrafica = document.getElementById('grafica');
-const indicadorBtn = document.getElementById('indicador');
-const resolucionBtn = document.getElementById('resolucion');
+
 const grafica = new GraficaPrincipal(contenedorGrafica);
 console.log(grafica);
 const dims = { superior: 100, derecha: 30, inferior: 150, izquierda: 60 };
@@ -146,11 +145,23 @@ function dibujar() {
 
 actualizarDimensiones();
 inicio();
+const indicadorBtn = document.getElementById('indicador');
+const resolucionBtn = document.getElementById('resolucion');
 const opcionCasos = document.getElementById('opcionCasos');
 const opcionMuertes = document.getElementById('opcionMuertes');
+const opcionSemanas = document.getElementById('opcionSemanas');
+const opcionDias = document.getElementById('opcionDias');
 
 resolucionBtn.onchange = () => {
   grafica.cambiarResolucion(obtenerResolucion()).actualizarEjeY().dibujar(0);
+
+  if (resolucionBtn.checked) {
+    opcionSemanas.classList.add('seleccionado');
+    opcionDias.classList.remove('seleccionado');
+  } else {
+    opcionSemanas.classList.remove('seleccionado');
+    opcionDias.classList.add('seleccionado');
+  }
 };
 
 opcionCasos.onclick = () => {
@@ -165,6 +176,13 @@ opcionMuertes.onclick = () => {
 
 indicadorBtn.onchange = () => {
   grafica.cambiarIndicador(obtenerIndicador()).actualizarEjeY().dibujar();
+  if (indicadorBtn.checked) {
+    opcionMuertes.classList.add('seleccionado');
+    opcionCasos.classList.remove('seleccionado');
+  } else {
+    opcionMuertes.classList.remove('seleccionado');
+    opcionCasos.classList.add('seleccionado');
+  }
 };
 
 window.addEventListener('resize', diferir(actualizarDimensiones, 150));
