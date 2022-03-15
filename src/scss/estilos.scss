@@ -95,54 +95,8 @@
   fill: rgba(0, 0, 0, 0.5);
 }
 
-$switchAncho: 50px;
-$btnDiametro: 18px;
-
 .tipoIndicador {
   cursor: pointer;
-}
-
-.switch {
-  display: inline-block;
-  position: relative;
-  width: $switchAncho;
-  height: 20px;
-  border-radius: 10px;
-  background: #dfd9ea;
-  transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  vertical-align: middle;
-  cursor: pointer;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 1px;
-    left: 2px;
-    width: $btnDiametro;
-    height: $btnDiametro;
-    background: #2e2b2b;
-    border-radius: 50%;
-    transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-      box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  &:active::before {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 20px rgba(128, 128, 128, 0.1);
-  }
-}
-
-.entradaSwitch {
-  &:checked + .switch {
-    background: #72da67;
-  }
-
-  &:checked + .switch::before {
-    left: $switchAncho - $btnDiametro;
-  }
-
-  &:checked + .switch:active::before {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 20px rgba(0, 150, 136, 0.2);
-  }
 }
 
 .caso {
@@ -168,6 +122,10 @@ $btnDiametro: 18px;
 }
 
 .lineaPreliminar {
+  stroke: #5b5b5b;
+}
+
+.lineaPronostico {
   stroke: red;
 }
 
@@ -208,4 +166,21 @@ $btnDiametro: 18px;
     font-size: 0.9em;
     margin: 0 0 10px 0;
   }
+}
+
+#opciones {
+  display: flex;
+  margin-left: 3em;
+
+  .opcion {
+    margin-right: 1.5em;
+  }
+}
+
+h1 {
+  font-family: $fuentePrincipal;
+
+  color: #072b2b;
+  font-size: 1.3em;
+  text-align: center;
 }
