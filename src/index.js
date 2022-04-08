@@ -2,38 +2,58 @@ import './scss/estilos.scss';
 import { diferir } from './utilidades/ayudas';
 import componerDatos from './utilidades/componerDatos';
 import GraficaPrincipal from './componentes/GraficaPrincipal';
+import Zoom from './componentes/Zoom';
 
 const contenedorGrafica = document.getElementById('grafica');
-
+const contenedorZoom = document.getElementById('zoom');
 const grafica = new GraficaPrincipal(contenedorGrafica);
-console.log(grafica);
-const dims = { superior: 100, derecha: 30, inferior: 150, izquierda: 60 };
-dims.margenHorizontal = dims.derecha + dims.izquierda;
-dims.margenVertical = dims.superior + dims.inferior;
+const zoom = new Zoom(contenedorZoom);
+
+const dims = {
+  principal: {
+    superior: 0,
+    derecha: 0,
+    inferior: 40,
+    izquierda: 60,
+  },
+  zoom: {
+    izquierda: 60,
+  },
+};
+dims.principal.margenHorizontal = dims.principal.derecha + dims.principal.izquierda;
+dims.principal.margenVertical = dims.principal.superior + dims.principal.inferior;
 
 const obtenerResolucion = () => (resolucionBtn.checked ? 'semanal' : 'diario');
 const obtenerIndicador = () => (indicadorBtn.checked ? 'muertes' : 'casos');
 
 function actualizarDimensiones() {
-  dims.ancho = contenedorGrafica.offsetWidth - dims.margenHorizontal;
-  dims.alto = contenedorGrafica.offsetHeight - dims.margenVertical;
-  grafica.escalar(dims);
+  dims.principal.ancho = contenedorGrafica.offsetWidth - dims.principal.margenHorizontal;
+  dims.principal.alto = contenedorGrafica.offsetHeight - dims.principal.margenVertical;
+  dims.zoom.ancho = contenedorZoom.offsetWidth - dims.principal.margenHorizontal;
+  dims.zoom.alto = contenedorZoom.offsetHeight;
+  grafica.escalar(dims.principal);
+  zoom.escalar(dims.zoom);
 }
 
 async function inicio() {
   const datos = await componerDatos();
-
+  const indicador = obtenerIndicador();
+  const resolucion = obtenerResolucion();
   grafica
-    .cambiarIndicador(obtenerIndicador())
-    .cambiarResolucion(obtenerResolucion())
+    .cambiarIndicador(indicador)
+    .cambiarResolucion(resolucion)
     .conectarDatos(datos)
     .actualizarEjeX()
     .actualizarEjeY();
+
+  zoom.cambiarIndicador().cambiarIndicador(indicador).cambiarResolucion(resolucion).conectarDatos(datos);
 
   dibujar();
 }
 
 function dibujar() {
+  grafica.dibujar();
+  zoom.dibujar();
   // const clip = grafica
   //   .append('defs')
   //   .append('svg:clipPath')
@@ -80,8 +100,6 @@ function dibujar() {
   /**
    * Linea de muertes
    */
-
-  grafica.dibujar();
 
   // grafica
   //   .selectAll('casos')
@@ -154,6 +172,7 @@ const opcionDias = document.getElementById('opcionDias');
 
 resolucionBtn.onchange = () => {
   grafica.cambiarResolucion(obtenerResolucion()).actualizarEjeY().dibujar(0);
+  zoom.cambiarResolucion(obtenerResolucion()).dibujar(0);
 
   if (resolucionBtn.checked) {
     opcionSemanas.classList.add('seleccionado');
@@ -176,6 +195,7 @@ opcionMuertes.onclick = () => {
 
 indicadorBtn.onchange = () => {
   grafica.cambiarIndicador(obtenerIndicador()).actualizarEjeY().dibujar();
+  zoom.cambiarIndicador(obtenerIndicador()).dibujar();
   if (indicadorBtn.checked) {
     opcionMuertes.classList.add('seleccionado');
     opcionCasos.classList.remove('seleccionado');

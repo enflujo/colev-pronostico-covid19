@@ -1,36 +1,15 @@
-import { select, pointer } from 'd3-selection';
-import { scaleLinear, scaleTime } from 'd3-scale';
-import { axisBottom, axisLeft } from 'd3-axis';
-import { line } from 'd3-shape';
-import { bisector, max } from 'd3-array';
-import { timeWeek } from 'd3-time';
-import { transition } from 'd3-transition';
+import { pointer, axisBottom, axisLeft, line, bisector, max, timeWeek, transition } from 'd3';
+import Grafica from './Grafica';
 
-/**
- *
- */
-export default class GraficaPrincipal {
-  datos;
-  dims;
-  indicador = 'muertes';
-  resolucion = 'semanal';
-  /**
-   *
-   * @param {HTMLElement} contenedor Contenedor donde ubicar la gráfica.
-   */
+export default class GraficaPrincipal extends Grafica {
   constructor(contenedor) {
-    this.svg = select(contenedor).append('svg');
-    this.vis = this.svg.append('g').attr('class', 'visualizacionPrincipal');
+    super(contenedor);
+
     this.indicadorX = this.vis.append('g').attr('class', 'eje');
     this.indicadorY = this.vis.append('g').attr('class', 'eje');
     this.puntosCasos = this.vis.append('g').attr('class', 'puntos');
-    this.linea = this.vis.append('path').attr('class', 'lineaPrincipal sinFondo');
-    this.lineaPreliminar = this.vis.append('path').attr('class', 'lineaPreliminar sinFondo');
     this.lineaPronostico = this.vis.append('path').attr('class', 'lineaPronostico sinFondo');
     this.foco = this.vis.append('circle').attr('class', 'foco sinFondo').attr('r', 8.5);
-
-    this.ejeX = scaleTime();
-    this.ejeY = scaleLinear();
 
     this.areaInteraccion = this.vis
       .append('rect')
@@ -41,14 +20,8 @@ export default class GraficaPrincipal {
   }
 
   #interseccionX = bisector((d) => d.fecha).left;
-  #posX = (d) => this.ejeX(d.fecha);
-  #posY = (d) => this.ejeY(d[this.indicador]);
+
   #radioPuntos = () => (this.resolucion === 'semanal' ? 3.5 : 1.5);
-  #attrLinea = (grupo) => {
-    grupo
-      .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
-      .attr('d', line().x(this.#posX).y(this.#posY));
-  };
 
   #sobreGrafica = (e) => {
     e.stopPropagation();
@@ -87,7 +60,6 @@ export default class GraficaPrincipal {
     }
 
     this.dims = dims;
-    // if (this.datos) this.dibujar();
     return this;
   }
 
@@ -115,10 +87,7 @@ export default class GraficaPrincipal {
     const datos2 = this.datos.intervalos[this.resolucion];
 
     this.linea.datum(datos).transition(transicion);
-    this.#attrLinea(this.linea);
-
-    // this.lineaPreliminar.datum(datos.preliminar).transition(transicion);
-    // this.#attrLinea(this.lineaPreliminar);
+    this._attrLinea(this.linea);
 
     if (this.indicador === 'muertes') {
       this.lineaPronostico
@@ -128,7 +97,7 @@ export default class GraficaPrincipal {
         .attr(
           'd',
           line()
-            .x(this.#posX)
+            .x(this._posX)
             .y((d) => this.ejeY(d.promedio))
         );
     } else {
@@ -143,12 +112,12 @@ export default class GraficaPrincipal {
           enter
             .append('circle')
             .attr('class', 'caso')
-            .attr('cx', this.#posX)
-            .attr('cy', this.#posY)
+            .attr('cx', this._posX)
+            .attr('cy', this._posY)
             .call((enter) => enter.transition(transicion).attr('r', this.#radioPuntos)),
         (update) =>
           update.call((update) =>
-            update.transition(transicion).attr('cx', this.#posX).attr('cy', this.#posY).attr('r', this.#radioPuntos)
+            update.transition(transicion).attr('cx', this._posX).attr('cy', this._posY).attr('r', this.#radioPuntos)
           ),
         (exit) =>
           exit.call((exit) =>
@@ -159,22 +128,6 @@ export default class GraficaPrincipal {
               .remove()
           )
       );
-    return this;
-  }
-
-  conectarDatos(datos) {
-    this.datos = datos;
-    console.log(datos);
-    return this;
-  }
-
-  cambiarIndicador(indicador) {
-    this.indicador = indicador;
-    return this;
-  }
-
-  cambiarResolucion(resolucion) {
-    this.resolucion = resolucion;
     return this;
   }
 }

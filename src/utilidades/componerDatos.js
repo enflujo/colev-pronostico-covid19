@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import UTC from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
-import { csv as fetchCSV } from 'd3-fetch';
+import { csv as fetchCSV } from 'd3';
 import { esquemaIntervalos, esquemaCasos } from './esquemas';
 
 dayjs.extend(UTC);
