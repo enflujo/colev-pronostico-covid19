@@ -5,6 +5,10 @@ import { line } from 'd3-shape';
 import { bisector, max } from 'd3-array';
 import { timeWeek } from 'd3-time';
 import { transition } from 'd3-transition';
+import { thresholdScott } from 'd3-array';
+
+import { fechaEnEspañol } from '../utilidades/ayudas';
+import { sumarRestarDias } from '../utilidades/ayudas';
 
 /**
  *
@@ -19,6 +23,7 @@ export default class GraficaPrincipal {
    * @param {HTMLElement} contenedor Contenedor donde ubicar la gráfica.
    */
   constructor(contenedor) {
+    this.grafica = select('#grafica');
     this.svg = select(contenedor).append('svg');
     this.vis = this.svg.append('g').attr('class', 'visualizacionPrincipal');
     this.indicadorX = this.vis.append('g').attr('class', 'eje');
@@ -28,6 +33,20 @@ export default class GraficaPrincipal {
     this.lineaPreliminar = this.vis.append('path').attr('class', 'lineaPreliminar sinFondo');
     this.lineaPronostico = this.vis.append('path').attr('class', 'lineaPronostico sinFondo');
     this.foco = this.vis.append('circle').attr('class', 'foco sinFondo').attr('r', 8.5);
+    this.infoFoco = this.grafica
+      .append('div')
+      .style('opacity', 0)
+      .attr('class', 'tooltip')
+      .style('background-color', '#fffdf8')
+      .style('color', '#08173e')
+      .style('border', 'solid')
+      .style('border-width', '1px')
+      .style('border-radius', '5px')
+      .style('border-color', '#af2828')
+      .style('padding', '5px')
+      .style('position', 'absolute')
+      .style('width', '200px')
+      .style('height', '100px');
 
     this.ejeX = scaleTime();
     this.ejeY = scaleLinear();
@@ -58,6 +77,7 @@ export default class GraficaPrincipal {
   #salidaDeGrafica = (e) => {
     e.stopPropagation();
     this.foco.style('opacity', 0);
+    this.infoFoco.style('opacity', 0);
   };
 
   #movSobreGrafica = (e) => {
@@ -67,11 +87,42 @@ export default class GraficaPrincipal {
     const x0 = this.ejeX.invert(pointer(e)[0]);
     const i = this.#interseccionX(datos, x0);
     const registro = datos[i];
-
     if (registro) {
       this.foco.attr('cx', this.ejeX(registro.fecha)).attr('cy', this.ejeY(registro[this.indicador]));
+      this.sobreFoco(registro, e);
     }
   };
+
+  sobreFoco(registro, e) {
+    const pos = pointer(e);
+    this.infoFoco
+      .style('opacity', 0.9)
+      .style('z-index', 99)
+      .style('left', pos[0] + 90 + 'px')
+      .style('top', pos[1] + 180 + 'px');
+    if (this.resolucion === 'semanal') {
+      let fechaInicial = sumarRestarDias(registro.fecha, -6);
+      this.infoFoco.html(
+        'Del ' +
+          '<b>' +
+          fechaEnEspañol(fechaInicial) +
+          '</b>' +
+          ' ' +
+          'al ' +
+          '<b>' +
+          fechaEnEspañol(registro.fecha) +
+          '</b>' +
+          ': ' +
+          registro[this.indicador] +
+          ' ' +
+          this.indicador
+      );
+    } else if (this.resolucion === 'diario') {
+      this.infoFoco.html(
+        '<b>' + fechaEnEspañol(registro.fecha) + '</b>' + ': ' + registro[this.indicador] + ' ' + this.indicador
+      );
+    }
+  }
 
   escalar(dims) {
     const { ancho, alto } = dims;

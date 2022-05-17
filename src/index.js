@@ -59,7 +59,7 @@ function dibujar() {
   //   .attr(
   //     'd',
   //     area()
-  //       .x((d) => x(d.fecha))
+  //       .x((d) => x(d.))
   //       .y0((d) => y(d.low_95))
   //       .y1((d) => y(d.high_95))
   //   );

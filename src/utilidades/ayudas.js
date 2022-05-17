@@ -4,7 +4,7 @@ export const fechaValida = (fecha) => {
 
 /**
  * Convierte de millisegundos a días.
- * @param {number} ms Millisegundos a convertir en días.
+ * @param {number} ms Milisegundos a convertir en días
  * @returns numero de días
  */
 export const msADias = (ms) => ms / (1000 * 60 * 60 * 24);
@@ -12,9 +12,9 @@ export const msADias = (ms) => ms / (1000 * 60 * 60 * 24);
 /**
  * Calcula el numero de meses entre dos fechas.
  *
- * @param {Date} inicio Fecha inicial en formato Date.
- * @param {Date} final Fecha final en formato Date.
- * @returns Numero de meses entre las dos fechas.
+ * @param {Date} inicio Fecha inicial en formato `Date`
+ * @param {Date} final Fecha final en formato `Date`
+ * @returns Numero de meses entre las dos fechas
  */
 export const calcularMeses = (inicio, final) => {
   let meses = (final.getFullYear() - inicio.getFullYear()) * 12;
@@ -54,3 +54,26 @@ export const diferir = (func, tiempo) => {
     reloj = setTimeout(func, tiempo, e);
   };
 };
+
+/***
+ * Traduce una variable tipo `Date` a español con el formato que se especifica en las opciones.
+ *
+ * @param {Date} fecha Fecha que quiere traducirse
+ * @returns {Function} Fecha traducida
+ */
+export const fechaEnEspañol = (fecha) => {
+  const opciones = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+  return fecha.toLocaleDateString('es-CO', opciones);
+};
+
+/***
+ * Sumar o restar días a una fecha en formato `Date` para calcular una nueva fecha.
+ * @param {Date} fecha Fecha inicial conocida
+ * @param {Number} dias Cantidad de días que se quiere sumar o restar. Si se quiere restar, el valor debe ser negativo
+ * @returns {Date} Nueva fecha en formato `Date`
+ */
+export function sumarRestarDias(fecha, dias) {
+  var resultado = new Date(fecha);
+  resultado.setDate(resultado.getDate() + dias);
+  return resultado;
+}
