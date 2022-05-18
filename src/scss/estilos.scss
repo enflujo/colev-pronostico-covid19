@@ -27,7 +27,7 @@
   font-family: Arial, Helvetica, sans-serif;
   font-size: 0.9em;
   position: fixed;
-  border: 2px solid #d3d3d3;
+  border: 2px solid #fff;
   padding: 0.5em;
   left: 100px;
   display: flex;
@@ -100,12 +100,20 @@
 }
 
 .caso {
-  fill: rgba(0, 150, 136, 0.5);
+  fill: transparent;
   stroke: none;
+
+  &:hover {
+    fill: rgb(22, 246, 231);
+  }
 }
 
 .sinFondo {
   fill: none;
+}
+
+.sinLinea {
+  stroke: none;
 }
 
 .areaInteraccion {
@@ -113,12 +121,13 @@
 }
 
 .foco {
-  stroke: black;
+  // stroke: black;
+  fill: rgba(46, 254, 228, 0.9);
   opacity: 0;
 }
 
 .lineaPrincipal {
-  stroke: black;
+  fill: #ffeb6d // stroke: black;
 }
 
 .lineaPreliminar {
@@ -135,8 +144,8 @@
   position: fixed;
   bottom: 0;
   height: 90px;
-  background-color: #fff7eb;
-  color: #072b2b;
+  background-color: #fff;
+  color: #fff;
   width: 100%;
 
   section {
@@ -178,9 +187,26 @@
 }
 
 h1 {
-  font-family: $fuentePrincipal;
-
-  color: #072b2b;
-  font-size: 1.3em;
+  font-family: $fuenteTitulo;
+  color: #7a59e4;
+  font-weight: 700;
+  font-size: 2em;
   text-align: center;
+}
+
+
+.infoFoco {
+  background-color: rgba(46, 254, 228, 0.7);
+  color: #7a59e4;
+  padding: 10px;
+  position: absolute;
+  width: 200px;
+  height: fit-content;
+  border-radius: 5px;
+  z-index: 99;
+}
+
+.lineaFoco {
+  stroke: rgba(46, 254, 228, 0.7);
+  stroke-width: 1px;
 }

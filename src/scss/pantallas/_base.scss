@@ -1,9 +1,10 @@
 body {
-  background-color: #f8eee0;
+  background-color: #f3efff;
 }
 
 .eje {
   font-family: $fuenteMono;
+  color: #7a50e4
 }
 
 #grafica {
@@ -17,7 +18,7 @@ body {
   width: $switchAncho;
   height: 20px;
   border-radius: 10px;
-  background: #afbaae;
+  background: rgba(255, 255, 255, 0.7);
   transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   vertical-align: middle;
   cursor: pointer;
@@ -29,7 +30,7 @@ body {
     left: 2px;
     width: $btnDiametro;
     height: $btnDiametro;
-    background: #2e2b2b;
+    background: #7a59e4;
     border-radius: 50%;
     transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
       box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -41,14 +42,13 @@ body {
 }
 
 .entradaSwitch {
-  &:checked + .switch {
-  }
+  &:checked+.switch {}
 
-  &:checked + .switch::before {
+  &:checked+.switch::before {
     left: $switchAncho - $btnDiametro;
   }
 
-  &:checked + .switch:active::before {
+  &:checked+.switch:active::before {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 20px rgba(0, 150, 136, 0.2);
   }
 }

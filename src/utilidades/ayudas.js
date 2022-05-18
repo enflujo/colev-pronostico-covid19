@@ -62,7 +62,7 @@ export const diferir = (func, tiempo) => {
  * @returns {Function} Fecha traducida
  */
 export const fechaEnEspañol = (fecha) => {
-  const opciones = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+  const opciones = { year: 'numeric', month: 'short', day: 'numeric' };
   return fecha.toLocaleDateString('es-CO', opciones);
 };
 

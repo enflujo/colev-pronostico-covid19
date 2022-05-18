@@ -9,6 +9,7 @@ import { thresholdScott } from 'd3-array';
 
 import { fechaEnEspañol } from '../utilidades/ayudas';
 import { sumarRestarDias } from '../utilidades/ayudas';
+import { area } from 'd3-shape';
 
 /**
  *
@@ -28,25 +29,14 @@ export default class GraficaPrincipal {
     this.vis = this.svg.append('g').attr('class', 'visualizacionPrincipal');
     this.indicadorX = this.vis.append('g').attr('class', 'eje');
     this.indicadorY = this.vis.append('g').attr('class', 'eje');
-    this.puntosCasos = this.vis.append('g').attr('class', 'puntos');
-    this.linea = this.vis.append('path').attr('class', 'lineaPrincipal sinFondo');
+
+    this.linea = this.vis.append('path').attr('class', 'lineaPrincipal sinLinea');
     this.lineaPreliminar = this.vis.append('path').attr('class', 'lineaPreliminar sinFondo');
     this.lineaPronostico = this.vis.append('path').attr('class', 'lineaPronostico sinFondo');
-    this.foco = this.vis.append('circle').attr('class', 'foco sinFondo').attr('r', 8.5);
-    this.infoFoco = this.grafica
-      .append('div')
-      .style('opacity', 0)
-      .attr('class', 'tooltip')
-      .style('background-color', '#fffdf8')
-      .style('color', '#08173e')
-      .style('border', 'solid')
-      .style('border-width', '1px')
-      .style('border-radius', '5px')
-      .style('border-color', '#af2828')
-      .style('padding', '5px')
-      .style('position', 'absolute')
-      .style('width', '200px')
-      .style('height', '100px');
+    this.puntosCasos = this.vis.append('g').attr('class', 'puntos');
+    this.foco = this.vis.append('circle').attr('class', 'foco sinLinea').attr('r', 3);
+    this.infoFoco = this.grafica.append('div').style('opacity', 0).attr('class', 'infoFoco');
+    this.lineaFoco = this.vis.append('path').attr('class', 'lineaFoco sinFondo');
 
     this.ejeX = scaleTime();
     this.ejeY = scaleLinear();
@@ -65,12 +55,13 @@ export default class GraficaPrincipal {
   #radioPuntos = () => (this.resolucion === 'semanal' ? 3.5 : 1.5);
   #attrLinea = (grupo) => {
     grupo
-      .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
-      .attr('d', line().x(this.#posX).y(this.#posY));
+      // .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
+      .attr('d', area(this.#posX, this.#posY, this.dims.alto));
   };
 
   #sobreGrafica = (e) => {
     e.stopPropagation();
+
     this.foco.style('opacity', 1);
   };
 
@@ -78,6 +69,7 @@ export default class GraficaPrincipal {
     e.stopPropagation();
     this.foco.style('opacity', 0);
     this.infoFoco.style('opacity', 0);
+    this.lineaFoco.style('opacity', 0);
   };
 
   #movSobreGrafica = (e) => {
@@ -89,38 +81,37 @@ export default class GraficaPrincipal {
     const registro = datos[i];
     if (registro) {
       this.foco.attr('cx', this.ejeX(registro.fecha)).attr('cy', this.ejeY(registro[this.indicador]));
-      this.sobreFoco(registro, e);
+
+      this.sobreFoco(registro);
     }
   };
 
-  sobreFoco(registro, e) {
-    const pos = pointer(e);
+  sobreFoco(registro) {
+    const posPuntoX = this.ejeX(registro.fecha);
+    const posPuntoY = this.ejeY(registro[this.indicador]);
+    const linea = 'M' + posPuntoX + ', 399' + ' L' + posPuntoX + ', -80';
+
+    this.lineaFoco.style('opacity', 1);
     this.infoFoco
       .style('opacity', 0.9)
-      .style('z-index', 99)
-      .style('left', pos[0] + 90 + 'px')
-      .style('top', pos[1] + 180 + 'px');
+      .style('left', posPuntoX + 60 + 'px')
+      .style('top', 120 + 'px');
+
+    this.lineaFoco.attr('d', linea);
     if (this.resolucion === 'semanal') {
       let fechaInicial = sumarRestarDias(registro.fecha, -6);
       this.infoFoco.html(
-        'Del ' +
-          '<b>' +
-          fechaEnEspañol(fechaInicial) +
-          '</b>' +
+        fechaEnEspañol(fechaInicial) +
           ' ' +
-          'al ' +
-          '<b>' +
+          ' - ' +
           fechaEnEspañol(registro.fecha) +
-          '</b>' +
           ': ' +
           registro[this.indicador] +
           ' ' +
           this.indicador
       );
     } else if (this.resolucion === 'diario') {
-      this.infoFoco.html(
-        '<b>' + fechaEnEspañol(registro.fecha) + '</b>' + ': ' + registro[this.indicador] + ' ' + this.indicador
-      );
+      this.infoFoco.html(fechaEnEspañol(registro.fecha) + ': ' + registro[this.indicador] + ' ' + this.indicador);
     }
   }
 
@@ -165,11 +156,11 @@ export default class GraficaPrincipal {
     const datos = this.datos.casos[this.resolucion];
     const datos2 = this.datos.intervalos[this.resolucion];
 
-    this.linea.datum(datos).transition(transicion);
-    this.#attrLinea(this.linea);
-
     // this.lineaPreliminar.datum(datos.preliminar).transition(transicion);
     // this.#attrLinea(this.lineaPreliminar);
+
+    this.linea.datum(datos).transition(transicion);
+    this.#attrLinea(this.linea);
 
     if (this.indicador === 'muertes') {
       this.lineaPronostico
@@ -196,6 +187,9 @@ export default class GraficaPrincipal {
             .attr('class', 'caso')
             .attr('cx', this.#posX)
             .attr('cy', this.#posY)
+            .on('mouseover', (e) => {
+              console.log(e);
+            })
             .call((enter) => enter.transition(transicion).attr('r', this.#radioPuntos)),
         (update) =>
           update.call((update) =>
@@ -210,6 +204,7 @@ export default class GraficaPrincipal {
               .remove()
           )
       );
+
     return this;
   }
 
