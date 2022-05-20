@@ -89,7 +89,7 @@ export default class GraficaPrincipal {
   sobreFoco(registro) {
     const posPuntoX = this.ejeX(registro.fecha);
     const posPuntoY = this.ejeY(registro[this.indicador]);
-    const linea = 'M' + posPuntoX + ', 399' + ' L' + posPuntoX + ', -80';
+    const linea = 'M' + posPuntoX + ',' + posPuntoY + ' L' + posPuntoX + ', -90';
 
     this.lineaFoco.style('opacity', 1);
     this.infoFoco
@@ -155,6 +155,9 @@ export default class GraficaPrincipal {
     const transicion = transition().duration(duracion);
     const datos = this.datos.casos[this.resolucion];
     const datos2 = this.datos.intervalos[this.resolucion];
+
+    console.log(datos);
+    console.log(datos2);
 
     // this.lineaPreliminar.datum(datos.preliminar).transition(transicion);
     // this.#attrLinea(this.lineaPreliminar);

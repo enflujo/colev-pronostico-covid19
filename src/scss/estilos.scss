@@ -97,6 +97,7 @@
 
 .tipoIndicador {
   cursor: pointer;
+  color: #fff;
 }
 
 .caso {
@@ -122,12 +123,12 @@
 
 .foco {
   // stroke: black;
-  fill: rgba(46, 254, 228, 0.9);
+  fill: rgba(255, 235, 109, 0.9);
   opacity: 0;
 }
 
 .lineaPrincipal {
-  fill: #ffeb6d // stroke: black;
+  fill: rgba(255, 255, 255, 0.7) // stroke: black;
 }
 
 .lineaPreliminar {
@@ -188,15 +189,15 @@
 
 h1 {
   font-family: $fuenteTitulo;
-  color: #7a59e4;
-  font-weight: 700;
+  color: #fff;
+  font-weight: 800;
   font-size: 2em;
   text-align: center;
 }
 
 
 .infoFoco {
-  background-color: rgba(46, 254, 228, 0.7);
+  background-color: rgba(255, 235, 109, 0.9);
   color: #7a59e4;
   padding: 10px;
   position: absolute;
@@ -204,9 +205,10 @@ h1 {
   height: fit-content;
   border-radius: 5px;
   z-index: 99;
+  font-family: $fuenteTitulo;
 }
 
 .lineaFoco {
-  stroke: rgba(46, 254, 228, 0.7);
+  stroke: rgba(255, 235, 109, 0.9);
   stroke-width: 1px;
 }
