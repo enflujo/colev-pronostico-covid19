@@ -4,10 +4,11 @@ body {
 
 .eje {
   font-family: $fuenteMono;
-  color: #fff
+  color: #fff;
 }
 
 #grafica {
+  margin-left: 1em;
   width: 95vw;
   height: 65vh;
 }
@@ -42,13 +43,14 @@ body {
 }
 
 .entradaSwitch {
-  &:checked+.switch {}
+  &:checked + .switch {
+  }
 
-  &:checked+.switch::before {
+  &:checked + .switch::before {
     left: $switchAncho - $btnDiametro;
   }
 
-  &:checked+.switch:active::before {
+  &:checked + .switch:active::before {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28), 0 0 0 20px rgba(0, 150, 136, 0.2);
   }
 }
@@ -56,6 +58,7 @@ body {
 .tipoIndicador {
   transition: 0.25s ease-in-out opacity;
   opacity: 0.5;
+  font-family: $fuenteTitulo;
 
   &.seleccionado {
     opacity: 1;

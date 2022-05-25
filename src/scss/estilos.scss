@@ -23,9 +23,36 @@
   @import './pantallas/pantallasGrandes';
 }
 
+#tituloPrincipal {
+  font-family: 'Titillium Web', sans-serif;
+  color: #fff;
+  font-weight: 800;
+  font-size: 2.4em;
+  text-align: left;
+  padding-left: 1.5em;
+  padding-bottom: 0.3em;
+  padding-top: 0.3em;
+  padding-right: 1em;
+  line-height: 1.2em;
+}
+
+#subtituloPrincipal {
+  font-family: 'Volkorn';
+  font-style: italic;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.5em;
+  text-align: left;
+  margin-top: -1em;
+  padding-left: 1.5em;
+  margin-left: 1em;
+  padding-right: 1em;
+}
+
 #leyenda {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
   font-size: 0.9em;
+  font-weight: 400;
   position: fixed;
   border: 2px solid #fff;
   padding: 0.5em;
@@ -128,7 +155,7 @@
 }
 
 .lineaPrincipal {
-  fill: rgba(255, 255, 255, 0.7) // stroke: black;
+  fill: rgba(255, 255, 255, 0.7); // stroke: black;
 }
 
 .lineaPreliminar {
@@ -180,32 +207,28 @@
 
 #opciones {
   display: flex;
-  margin-left: 3em;
+  margin-top: 2em;
+  margin-left: 2em;
+  padding-left: 1.5em;
 
   .opcion {
     margin-right: 1.5em;
   }
 }
 
-h1 {
-  font-family: $fuenteTitulo;
-  color: #fff;
-  font-weight: 800;
-  font-size: 2em;
-  text-align: center;
-}
-
-
 .infoFoco {
   background-color: rgba(255, 235, 109, 0.9);
   color: #7a59e4;
   padding: 10px;
+  line-height: 19px;
   position: absolute;
   width: 200px;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
   height: fit-content;
   border-radius: 5px;
   z-index: 99;
-  font-family: $fuenteTitulo;
+  font-family: 'Titillium Web', sans-serif;
 }
 
 .lineaFoco {
