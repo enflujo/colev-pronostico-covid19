@@ -23,15 +23,58 @@
   @import './pantallas/pantallasGrandes';
 }
 
+#tituloPrincipal {
+  font-family: 'Titillium Web', sans-serif;
+  color: #fff;
+  font-weight: 800;
+  font-size: 2.4em;
+  text-align: left;
+  padding-left: 1.5em;
+  padding-bottom: 0.3em;
+  padding-top: 0.3em;
+  padding-right: 1em;
+  line-height: 1.2em;
+}
+
+#subtituloPrincipal {
+  font-family: 'Volkorn';
+  font-style: italic;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.5em;
+  text-align: left;
+  margin-top: -1em;
+  padding-left: 1.5em;
+  margin-left: 1em;
+  padding-right: 1em;
+}
+
 #leyenda {
-  font-family: Arial, Helvetica, sans-serif;
+
+  font-family: "Titillium Web", Arial, Helvetica, sans-serif;
   font-size: 0.9em;
-  position: fixed;
-  border: 2px solid #d3d3d3;
-  padding: 0.5em;
-  left: 100px;
-  display: flex;
+  font-weight: 400;
+  border: 2px solid white;
+  right: 5vw;
+  top: 10vh;
+  display: inline-flex;
+  position: absolute;
+  border-radius: 10px;
   flex-direction: column;
+  /* margin: 0.5em; */
+  width: auto;
+  padding-left: 0.5em;
+  padding-top: 0.5em;
+  background: #dddddd82;
+  // font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
+  // font-size: 0.9em;
+  // font-weight: 400;
+  // position: fixed;
+  // border: 2px solid #fff;
+  // padding: 0.5em;
+  // left: 100px;
+  // display: flex;
+  // flex-direction: column;
 
   .seccion {
     display: flex;
@@ -72,61 +115,86 @@
     }
   }
 
-  #forecast95 {
-    .rango {
-      background-color: #d6a09f;
-    }
-  }
 
-  #forecast80 {
-    .rango {
-      background-color: #e3bfbe;
-    }
+}
+#forecast95 {
+  .rango {
+    fill: #d6a09f;
   }
+  clip-path: url(#clip);
 
-  #forecast50 {
-    .rango {
-      background-color: #f0d9d9;
-    }
-  }
 }
 
+#forecast80 {
+  .rango {
+    fill: #e3bfbe;
+  }
+  clip-path: url(#clip);
+
+}
+
+#forecast50 {
+  .rango {
+    fill: #f0d9d9;
+  }
+  clip-path: url(#clip);
+}
 .puntoCasoComprobado {
   fill: rgba(0, 0, 0, 0.5);
 }
 
 .tipoIndicador {
   cursor: pointer;
+  color: #fff;
 }
 
 .caso {
-  fill: rgba(0, 150, 136, 0.5);
+  fill: transparent;
   stroke: none;
+
+  &:hover {
+    fill: rgb(22, 246, 231);
+  }
 }
 
 .sinFondo {
   fill: none;
 }
 
+.sinLinea {
+  stroke: none;
+  clip-path: url(#clip);
+}
+
 .areaInteraccion {
   pointer-events: all;
+  clip-path: url(#clip);
 }
 
 .foco {
-  stroke: black;
+  // stroke: black;
+  fill: rgba(255, 235, 109, 0.9);
   opacity: 0;
 }
 
 .lineaPrincipal {
-  stroke: black;
+  fill: rgba(255, 255, 255, 0.7); // stroke: black;
+  clip-path: url(#clip);
 }
 
 .lineaPreliminar {
   stroke: #5b5b5b;
+  clip-path: url(#clip);
 }
 
 .lineaPronostico {
   stroke: red;
+  clip-path: url(#clip);
+}
+
+.intervaloDeConfianza {
+  stroke: purple;
+  clip-path: url(#clip);
 }
 
 #creditos {
@@ -135,8 +203,8 @@
   position: fixed;
   bottom: 0;
   height: 90px;
-  background-color: #fff7eb;
-  color: #072b2b;
+  background-color: #fff;
+  color: #fff;
   width: 100%;
 
   section {
@@ -170,17 +238,57 @@
 
 #opciones {
   display: flex;
-  margin-left: 3em;
+  margin-top: 2em;
+  margin-left: 2em;
+  padding-left: 1.5em;
 
   .opcion {
     margin-right: 1.5em;
   }
 }
 
-h1 {
-  font-family: $fuentePrincipal;
+.infoFoco {
+  background-color: rgba(255, 235, 109, 0.9);
+  color: #7a59e4;
+  padding: 10px;
+  line-height: 19px;
+  position: absolute;
+  width: 200px;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  border-radius: 5px;
+  z-index: 99;
+  font-family: 'Titillium Web', sans-serif;
+}
 
-  color: #072b2b;
-  font-size: 1.3em;
-  text-align: center;
+.lineaFoco {
+  stroke: rgba(255, 235, 109, 0.9);
+  stroke-width: 1px;
+}
+
+
+.navigation {
+  text-decoration: none;
+  display: inline-block;
+  padding: 4px 10px;
+}
+
+.navigation:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.previous {
+  background-color: rebeccapurple;
+  color: white;
+}
+
+.next {
+  background-color: rebeccapurple;
+  color: white;
+}
+
+.round {
+  border-radius: 50%;
 }

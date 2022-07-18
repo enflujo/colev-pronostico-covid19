@@ -1,14 +1,23 @@
 body {
-  background-color: #f8eee0;
+  background-color: #7a59e4;
 }
 
 .eje {
   font-family: $fuenteMono;
+  color: #fff;
 }
 
 #grafica {
+  margin-left: 1em;
   width: 95vw;
   height: 65vh;
+}
+
+#zoom {
+  margin-left: 1em;
+  width: 95vw;
+  // height: 65vh;
+  display: flex;
 }
 
 .switch {
@@ -17,7 +26,7 @@ body {
   width: $switchAncho;
   height: 20px;
   border-radius: 10px;
-  background: #afbaae;
+  background: rgba(255, 255, 255, 0.7);
   transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
   vertical-align: middle;
   cursor: pointer;
@@ -29,7 +38,7 @@ body {
     left: 2px;
     width: $btnDiametro;
     height: $btnDiametro;
-    background: #2e2b2b;
+    background: #7a59e4;
     border-radius: 50%;
     transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.28s cubic-bezier(0.4, 0, 0.2, 1),
       box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
@@ -56,9 +65,24 @@ body {
 .tipoIndicador {
   transition: 0.25s ease-in-out opacity;
   opacity: 0.5;
+  font-family: $fuenteTitulo;
 
   &.seleccionado {
     opacity: 1;
     border-bottom: 1px solid;
   }
+}
+
+.seleccionePronostico {
+  // display: inline-block;
+  position: relative;
+  font-family: $fuenteTitulo;
+  width: auto;
+  height: 24px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  transition: background 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  vertical-align: middle;
+  cursor: pointer;
+  color: #7a59e4;
 }
