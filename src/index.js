@@ -15,6 +15,7 @@ const obtenerIndicador = () => (indicadorBtn.checked ? 'muertes' : 'casos');
 const obtenerPronostico = () => (pronosticoBtn.checked ? 'graficar' : 'esconder');
 
 function actualizarDimensiones() {
+  dims.antiguoAncho = dims.ancho
   dims.ancho = contenedorGrafica.offsetWidth - dims.margenHorizontal;
   dims.alto = contenedorGrafica.offsetHeight - dims.margenVertical;
   grafica.escalar(dims);

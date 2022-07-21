@@ -7,7 +7,7 @@ import { timeWeek } from 'd3-time';
 import { transition } from 'd3-transition';
 import { thresholdScott } from 'd3-array';
 
-import { brushSelection, brushX } from 'd3-brush';
+import { brushSelection, brushX, brush } from 'd3-brush';
 import { utcDay } from 'd3-time';
 import { utcYear } from 'd3-time';
 
@@ -178,7 +178,10 @@ export default class GraficaPrincipal {
   }
   
   escalar(dims) {
-    const { ancho, alto } = dims;
+    
+    const { antiguoAncho, ancho, alto } = dims;
+    if(this.dims){console.log(ancho/antiguoAncho)}
+
     this.svg.attr('width', ancho + dims.margenHorizontal).attr('height', alto + dims.margenVertical);
     this.vis.attr('transform', `translate(${dims.izquierda},${dims.superior})`);
     this.indicadorX.attr('transform', `translate(0, ${alto})`);
@@ -187,40 +190,54 @@ export default class GraficaPrincipal {
     select('#clip').append("rect")
       .attr("width", ancho)
       .attr("height", alto);
-    
-    console.log([ancho, dims.ancho])
+    if(this.dims){ console.log([ancho, this.dims.ancho])}
     select('#visualizacionEnfoque')
       .attr('width', ancho + dims.margenHorizontal)
       // .attr("viewBox", [0, 0, ancho, alto/2]) // + this.dims.derecha + this.dims.izquierda + 
-      .attr("viewBox", [0, 0, dims.ancho + dims.margenHorizontal, dims.alto/2]) // + dims.derecha + dims.izquierda
+      .attr("viewBox", [0, 0, dims.ancho + dims.margenHorizontal, dims.alto/2 + 50]) // + dims.derecha + dims.izquierda
       .attr("max-width",dims.ancho)
       .style("display", "block");
     this.enfoque.attr('transform', `translate(${dims.izquierda},${-dims.superior})`);
-
-    if (this.datos) {
-      this.actualizarEjeX();
-      this.actualizarEjeY();
-      this.dibujar();
-    }
     
     if(select('#brush').node() || this.fechaInicialFocus){
-      const sel = brushSelection(select('#brush').node())
+      console.log(this.brush.extent())
+      const sel = brushSelection(select('#brush').node()).map(function(x) {
+        return x * (ancho/antiguoAncho);
+      });
+      
       console.log(sel)
+      // 
+      
+      console.log(dims.ancho)
+      this.gb.attr('width',dims.ancho)
+      // this.enfoque.selectAll('.eje')
 
-      select('#brush')
+      this.brush
         .extent([[0, 0], [dims.ancho, dims.alto/2]])
+        
+      // this.brush.move(this.gb, sel)
 
-      this.actualizarEjeX()
-      this.ejeX.domain([this.fechaInicialFocus, this.fechaFinalFocus]).range([0, this.dims.ancho]);
-      this.dibujar()
-      this.ejeX.domain([this.datos.fechaInicial, this.datos.fechaFinal]).range([0, this.dims.ancho]);    
-      this.indicadorX
-        .transition()
-        .duration(this.duracion)
-        .call(axisBottom(this.ejeX.copy()).ticks(timeWeek.every(4)));
+      // if (this.datos) {
+      //   this.actualizarEjeX();
+      //   this.actualizarEjeY();
+      //   this.dibujar();
+      // }
+
+      if (this.datos) {
+        this.update([this.fechaInicialFocus,this.fechaFinalFocus])
+
+        // this.actualizarEjeX()
+        // this.ejeX.domain([this.fechaInicialFocus, this.fechaFinalFocus]).range([0, dims.ancho]);
+        // this.dibujar()
+        // this.ejeX.domain([this.datos.fechaInicial, this.datos.fechaFinal]).range([0, dims.ancho]);    
+        // this.indicadorX
+        //   .transition()
+        //   .duration(this.duracion)
+        //   .call(axisBottom(this.ejeX.copy()).ticks(timeWeek.every(4)));
+        }
+      
     }
     this.dims = dims;
-    
     return this;
   }
 
@@ -449,12 +466,11 @@ export default class GraficaPrincipal {
         .attr("d", area(this.#posX, this.#posYFocus, this.dims.alto))
         .attr('transform','scale(1.0,0.5)');
 
-      const gb = this.enfoque.append("g")
+      this.gb = this.enfoque.append("g")
         .attr('id','brush')
         .call(this.brush)
         .call(this.brush.move, defaultSelection);
 
-    
       return this.enfoque.node();
     }
     else{
@@ -462,9 +478,7 @@ export default class GraficaPrincipal {
       this.ejeX.domain([this.fechaInicialFocus, this.fechaFinalFocus]).range([0, this.dims.ancho]);
       this.dibujar()
       this.ejeX.domain([this.datos.fechaInicial, this.datos.fechaFinal]).range([0, this.dims.ancho]);  
-      
     }
-
   }
   
   brushed = ({ selection }) => {
@@ -484,21 +498,22 @@ export default class GraficaPrincipal {
 
   update(focusedArea) {
     const [minX, maxX] = focusedArea;
+    // console.log(focusedArea)
     const maxY = max(this.datos.casos[this.resolucion], d => minX <= d.fecha && d.fecha <= maxX ? d[this.indicador] : NaN);
-    const ejeX2 = this.ejeX.copy().domain([minX, maxX]).range([0, this.dims.ancho])
+    
+    this.ejeX2 = this.ejeX.copy().domain([minX, maxX]).range([0, this.dims.ancho])
     const ejeY2 = this.ejeY.copy().domain([0, maxY])
     this.fechaInicialFocus = minX
     this.fechaFinalFocus = maxX
 
     this.actualizarEjeX()
     this.ejeX.domain([this.fechaInicialFocus, this.fechaFinalFocus]).range([0, this.dims.ancho]);
-
     this.dibujar()
     this.ejeX.domain([this.datos.fechaInicial, this.datos.fechaFinal]).range([0, this.dims.ancho]);    
     this.indicadorX
       .transition()
       .duration(this.duracion)
-      .call(axisBottom(ejeX2.copy()).ticks(timeWeek.every(4)));
+      .call(axisBottom(this.ejeX2.copy()).ticks(timeWeek.every(4)));
      
     this.ejeY.domain([0, maxY]).range([this.dims.alto, 0]);
     this.indicadorY
@@ -508,7 +523,7 @@ export default class GraficaPrincipal {
 
     this.foco
       .call(axisBottom(this.ejeX).ticks(timeWeek.every(4)));
-
+    
     return focusedArea
   }
 
