@@ -4,11 +4,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@700;800;900&family=Vollkorn:ital,wght@1,600&display=swap"
+      rel="stylesheet"
+    />
     <title>Pronóstico Covid-19 en Colombia</title>
   </head>
   <body>
     <header>
-      <h1>Pronóstico de Covid-19 en Colombia</h1>
+      <h1 id="tituloPrincipal">Pronóstico de Covid-19 en Colombia</h1>
+      <h2 id="subtituloPrincipal">¿Cuántos contagiados en las próximas dos semanas?</h2>
 
       <div id="opciones">
         <div class="opcion">
@@ -24,10 +31,56 @@
           <label class="switch" for="resolucion"></label>
           <span id="opcionSemanas" class="tipoIndicador seleccionado">Semanas</span>
         </div>
+
+        <div class="opcion">
+          <span id="opcionPronosticoOn" class="tipoIndicador seleccionado">Fecha Pronóstico</span>
+          <input class="entradaSwitch" type="checkbox" hidden="hidden" checked id="pronostico" autocomplete="off" />
+          <label class="switch" for="pronostico"></label>
+          <span id="opcionPronosticoOff" class="tipoIndicador"></span>
+          <!-- </div>
+
+        <div class="opcion"> -->
+          <span id="opcionMuertesPronostico" class="tipoIndicador seleccionado"></span>
+          <select class="seleccionePronostico" id="seleccionePronostico" name="seleccionePronostico">
+            <option selected value="21-01-30">30/01/21</option>
+            <option value="21-02-13">13/02/21</option>
+            <option value="21-02-20">20/02/21</option>
+            <option value="21-02-27">27/02/21</option>
+            <option value="21-03-03">03/03/21</option>
+            <option value="21-03-14">14/03/21</option>
+            <option value="21-03-27">27/03/21</option>
+            <option value="21-04-10">10/04/21</option>
+            <option value="21-04-17">17/04/21</option>
+            <option value="21-04-24">24/04/21</option>
+            <option value="21-05-08">08/05/21</option>
+            <option value="21-05-16">16/05/21</option>
+            <option value="21-05-23">23/05/21</option>
+            <option value="21-05-30">30/05/21</option>
+            <option value="21-06-06">06/06/21</option>
+            <option value="21-06-13">13/06/21</option>
+            <option value="21-06-20">20/06/21</option>
+            <option value="21-06-27">27/06/21</option>
+            <option value="21-07-04">04/07/21</option>
+            <option value="21-07-11">11/07/21</option>
+            <option value="21-07-18">18/07/21</option>
+            <option value="21-07-25">25/07/21</option>
+            <option value="21-08-01">01/08/21</option>
+            <option value="21-08-08">08/08/21</option>
+            <option value="21-08-22">22/08/21</option>
+            <option value="21-08-29">29/08/21</option>
+            <option value="21-09-05">05/09/21</option>
+            <option value="21-09-12">12/09/21</option>
+            <option value="21-09-19">19/09/21</option>
+            <option value="21-09-26">26/09/21</option>
+          </select>
+          <a href="#" id="antes" class="navigation previous round">&#8249;</a>
+          <a href="#" id="despues" class="navigation next round">&#8250;</a>
+        </div>
       </div>
     </header>
 
     <main>
+      <div id="leyenda"></div>
       <div id="grafica"></div>
       <div id="zoom"></div>
     </main>

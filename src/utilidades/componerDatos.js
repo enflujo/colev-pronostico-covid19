@@ -1,11 +1,13 @@
 import dayjs from 'dayjs';
 import UTC from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import minMax from 'dayjs/plugin/minMax';
 import { csv as fetchCSV } from 'd3-fetch';
 import { esquemaIntervalos, esquemaCasos } from './esquemas';
 
 dayjs.extend(UTC);
 dayjs.extend(timezone);
+dayjs.extend(minMax);
 
 export default async () => {
   const datos = {
@@ -13,7 +15,8 @@ export default async () => {
     casos: { diario: {}, semanal: {} },
   };
 
-  const datosMuertes = await fetchCSV('/datos/deaths_df.csv');
+  const fechaPronostico = document.getElementById('seleccionePronostico');
+  const datosMuertes = await fetchCSV('/datos/deaths_df-' + fechaPronostico.value + '.csv');
   const datosCasos = await fetchCSV('/datos/cases.csv');
   const muertes = limpiarDatos(datosMuertes, 'deaths');
   const casos = limpiarDatos(datosCasos, 'cases');
@@ -32,9 +35,19 @@ export default async () => {
   datos.casos.diario = casos;
   datos.casos.semanal = normalizarSemanal(casos);
 
-  datos.fechaInicial = muertes[0].fecha;
-  datos.fechaFinal = muertes[muertes.length - 1].fecha;
+  datos.fechaInicial = casos[0].fecha;
+  // find max fechaFinal between casos y pronostico
+  const casosMax = casos[casos.length - 1].fecha;
+  const muertesMax = muertes[muertes.length - 1].fecha;
 
+  if (casosMax > muertesMax) {
+    datos.fechaFinal = casosMax;
+  } else {
+    datos.fechaFinal = muertesMax;
+  }
+
+  // console.log('datos:')
+  // console.log(datos)
   return datos;
 };
 
@@ -55,7 +68,6 @@ function validarEsquema(esquema, fila) {
       }
     }
   }
-
   return procesado;
 }
 
@@ -120,22 +132,46 @@ function normalizarSemanal2(datos) {
   const registrosSemanales = [];
   let inicioSemana = datos[0].fecha;
   let casosSemana = 0;
+  let casosSemanaBajo95 = 0;
+  let casosSemanaAlto95 = 0;
+  let casosSemanaBajo80 = 0;
+  let casosSemanaAlto80 = 0;
+  let casosSemanaBajo50 = 0;
+  let casosSemanaAlto50 = 0;
   let contadorI = 0;
+  let count = 0;
 
   datos.forEach((dia, i) => {
     casosSemana += dia.promedio;
-
+    casosSemanaBajo95 += dia.bajo95;
+    casosSemanaAlto95 += dia.alto95;
+    casosSemanaBajo80 += dia.bajo80;
+    casosSemanaAlto80 += dia.alto80;
+    casosSemanaBajo50 += dia.bajo50;
+    casosSemanaAlto50 += dia.alto50;
     // 0 es Domingo, agregar semana y reiniciar los contadores
     if (dia.fecha.getDay() === 0) {
       registrosSemanales.push({
         fecha: inicioSemana,
         fechaFinal: dia.fecha,
         promedio: casosSemana,
+        bajo95: casosSemanaBajo95,
+        alto95: casosSemanaAlto95,
+        bajo80: casosSemanaBajo80,
+        alto80: casosSemanaAlto80,
+        bajo50: casosSemanaBajo50,
+        alto50: casosSemanaAlto50,
         i: contadorI,
       });
-
       inicioSemana = i < datos.length - 2 ? datos[i + 1].fecha : null;
-      casosSemana = 0;
+      count,
+        casosSemana,
+        casosSemanaBajo95,
+        casosSemanaAlto95,
+        casosSemanaBajo80,
+        casosSemanaAlto80,
+        casosSemanaBajo50,
+        (casosSemanaAlto50 = 0);
       contadorI++;
     }
   });
