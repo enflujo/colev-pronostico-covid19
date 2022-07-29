@@ -15,7 +15,7 @@ export default async () => {
     casos: { diario: {}, semanal: {} },
   };
 
-  const fechaPronostico = document.getElementById("seleccionePronostico")
+  const fechaPronostico = document.getElementById('seleccionePronostico');
   const datosMuertes = await fetchCSV('/datos/deaths_df-' + fechaPronostico.value + '.csv');
   const datosCasos = await fetchCSV('/datos/cases.csv');
   const muertes = limpiarDatos(datosMuertes, 'deaths');
@@ -37,20 +37,18 @@ export default async () => {
 
   datos.fechaInicial = casos[0].fecha;
   // find max fechaFinal between casos y pronostico
-  const casosMax = casos[casos.length - 1].fecha
-  const muertesMax = muertes[muertes.length - 1].fecha
+  const casosMax = casos[casos.length - 1].fecha;
+  const muertesMax = muertes[muertes.length - 1].fecha;
 
-  if(casosMax > muertesMax){
+  if (casosMax > muertesMax) {
     datos.fechaFinal = casosMax;
-  }
-  else{
+  } else {
     datos.fechaFinal = muertesMax;
   }
 
   // console.log('datos:')
   // console.log(datos)
   return datos;
-
 };
 
 function validarEsquema(esquema, fila) {
@@ -166,7 +164,14 @@ function normalizarSemanal2(datos) {
         i: contadorI,
       });
       inicioSemana = i < datos.length - 2 ? datos[i + 1].fecha : null;
-      count, casosSemana, casosSemanaBajo95, casosSemanaAlto95, casosSemanaBajo80, casosSemanaAlto80, casosSemanaBajo50, casosSemanaAlto50 = 0;
+      count,
+        casosSemana,
+        casosSemanaBajo95,
+        casosSemanaAlto95,
+        casosSemanaBajo80,
+        casosSemanaAlto80,
+        casosSemanaBajo50,
+        (casosSemanaAlto50 = 0);
       contadorI++;
     }
   });

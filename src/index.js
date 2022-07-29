@@ -15,7 +15,7 @@ const obtenerIndicador = () => (indicadorBtn.checked ? 'muertes' : 'casos');
 const obtenerPronostico = () => (pronosticoBtn.checked ? 'graficar' : 'esconder');
 
 function actualizarDimensiones() {
-  dims.antiguoAncho = dims.ancho
+  dims.antiguoAncho = dims.ancho;
   dims.ancho = contenedorGrafica.offsetWidth - dims.margenHorizontal;
   dims.alto = contenedorGrafica.offsetHeight - dims.margenVertical;
   grafica.escalar(dims);
@@ -32,7 +32,7 @@ async function inicio() {
     .actualizarEjeX()
     .actualizarEjeY();
   dibujar();
-  grafica.dibujarLeyenda()
+  grafica.dibujarLeyenda();
 }
 
 function dibujar() {
@@ -161,12 +161,12 @@ const opcionPronosticoOff = document.getElementById('opcionPronosticoOff');
 
 const fechaPronostico = document.getElementById('seleccionePronostico');
 
-const antes = document.getElementById('antes')
-const despues = document.getElementById('despues')
+const antes = document.getElementById('antes');
+const despues = document.getElementById('despues');
 
 resolucionBtn.onchange = () => {
   // grafica.cambiarResolucion(obtenerResolucion()).actualizarEjeY().dibujar(0);
-  inicio()
+  inicio();
   if (resolucionBtn.checked) {
     opcionSemanas.classList.add('seleccionado');
     opcionDias.classList.remove('seleccionado');
@@ -186,10 +186,9 @@ opcionMuertes.onclick = () => {
   indicadorBtn.click();
 };
 
-
 indicadorBtn.onchange = () => {
   // grafica.cambiarIndicador(obtenerIndicador()).actualizarEjeY().dibujar();
-  inicio()
+  inicio();
   if (indicadorBtn.checked) {
     opcionMuertes.classList.add('seleccionado');
     opcionCasos.classList.remove('seleccionado');
@@ -211,7 +210,7 @@ opcionPronosticoOn.onclick = () => {
 
 pronosticoBtn.onchange = () => {
   grafica.cambiarIndicador(obtenerPronostico());
-  inicio()
+  inicio();
   if (pronosticoBtn.checked) {
     opcionPronosticoOn.classList.add('seleccionado');
     opcionPronosticoOff.classList.remove('seleccionado');
@@ -222,13 +221,12 @@ pronosticoBtn.onchange = () => {
 };
 
 fechaPronostico.onchange = () => {
-  console.log('actualizar pronóstico')
-  inicio()
+  console.log('actualizar pronóstico');
+  inicio();
   // // grafica.actualizarEjeX()
   // // grafica.actualizarEjeY()
   // grafica.dibujar();
-
-}
+};
 
 // var i = 0
 // Array.from(fechaPronostico.options).forEach(function(option_element) {
@@ -241,21 +239,19 @@ fechaPronostico.onchange = () => {
 // })
 
 antes.onclick = () => {
-  const i = fechaPronostico.selectedIndex
-  if(i>0){
-    fechaPronostico.selectedIndex = i - 1
-    inicio()
-
+  const i = fechaPronostico.selectedIndex;
+  if (i > 0) {
+    fechaPronostico.selectedIndex = i - 1;
+    inicio();
   }
-}
+};
 
 despues.onclick = () => {
-  const i = fechaPronostico.selectedIndex
-  if(i<fechaPronostico.length){
-    fechaPronostico.selectedIndex = i + 1
-    inicio()
+  const i = fechaPronostico.selectedIndex;
+  if (i < fechaPronostico.length) {
+    fechaPronostico.selectedIndex = i + 1;
+    inicio();
   }
-}
-
+};
 
 window.addEventListener('resize', diferir(actualizarDimensiones, 150));

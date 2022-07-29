@@ -50,8 +50,7 @@
 }
 
 #leyenda {
-
-  font-family: "Titillium Web", Arial, Helvetica, sans-serif;
+  font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
   font-size: 0.9em;
   font-weight: 400;
   border: 2px solid white;
@@ -114,15 +113,12 @@
       background-color: #cbcbcb;
     }
   }
-
-
 }
 #forecast95 {
   .rango {
     fill: #d6a09f;
   }
   clip-path: url(#clip);
-
 }
 
 #forecast80 {
@@ -130,7 +126,6 @@
     fill: #e3bfbe;
   }
   clip-path: url(#clip);
-
 }
 
 #forecast50 {
@@ -266,7 +261,6 @@
   stroke: rgba(255, 235, 109, 0.9);
   stroke-width: 1px;
 }
-
 
 .navigation {
   text-decoration: none;
