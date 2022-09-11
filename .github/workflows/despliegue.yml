@@ -1,0 +1,33 @@
+name: Despliegue
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    name: 🐘 Desplegar
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🐯 Obtener código del repositorio
+        uses: actions/checkout@v3
+
+      - name: 🐝 Usar Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+          cache: 'npm'
+
+      - name: 🔨 Hacer build
+        run: |
+          npm install
+          npm run build
+      - name: 🦅 Enviar por FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ${{ secrets.DOMINIO }}
+          username: ${{ secrets.USUARIO }}
+          server-dir: colev/colev-pronostico-covid19/publico/
+          local-dir: ./publico/
+          password: ${{ secrets.CLAVE }}
