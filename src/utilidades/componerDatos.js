@@ -46,8 +46,6 @@ export default async () => {
     datos.fechaFinal = muertesMax;
   }
 
-  // console.log('datos:')
-  // console.log(datos)
   return datos;
 };
 

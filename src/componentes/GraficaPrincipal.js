@@ -5,12 +5,8 @@ import { area, line } from 'd3-shape';
 import { bisector, max, extent } from 'd3-array';
 import { timeWeek } from 'd3-time';
 import { transition } from 'd3-transition';
-import { thresholdScott } from 'd3-array';
-
-import { brushSelection, brushX, brush } from 'd3-brush';
+import { brushSelection, brushX } from 'd3-brush';
 import { utcDay } from 'd3-time';
-import { utcYear } from 'd3-time';
-
 import { fechaEnEspañol } from '../utilidades/ayudas';
 import { sumarRestarDias } from '../utilidades/ayudas';
 
@@ -36,7 +32,7 @@ export default class GraficaPrincipal {
     this.enfoque = select('#zoom')
       .append('svg')
       .attr('class', 'visualizacionEnfoque')
-      .attr('id', 'visualizacionEnfoque'); //= select(contenedor).append('svg').attr('class', 'visualizacionEnfoque');
+      .attr('id', 'visualizacionEnfoque');
 
     this.indicadorX = this.vis.append('g').attr('class', 'eje').attr('id', 'ejeX');
     this.indicadorY = this.vis.append('g').attr('class', 'eje').attr('id', 'ejeY');
@@ -48,9 +44,6 @@ export default class GraficaPrincipal {
 
     this.intervaloDeConfianza50 = this.vis.append('path').attr('class', 'intervaloDeConfianza');
     this.lineaPronostico = this.vis.append('path').attr('class', 'lineaPronostico sinFondo');
-
-    // this.lineaPronosticoBajo95 = this.vis.append('path').attr('class', 'sinFondo intervaloDeConfianza');
-    // this.lineaPronosticoAlto95 = this.vis.append('path').attr('class', 'sinFondo intervaloDeConfianza');
 
     this.puntosCasos = this.vis.append('g').attr('class', 'puntos');
     this.foco = this.vis.append('circle').attr('class', 'foco sinLinea').attr('r', 3);
@@ -100,12 +93,12 @@ export default class GraficaPrincipal {
 
   #movSobreGrafica = (e) => {
     e.stopPropagation();
+    if (!this.datos) return;
     if (!this.ejeX) return;
     if (this.fechaInicialFocus || this.fechaFinalFocus) {
       this.ejeX.domain([this.fechaInicialFocus, this.fechaFinalFocus]).range([0, this.dims.ancho]);
     }
 
-    // para registro
     const datos = this.datos.casos[this.resolucion];
     const x0 = this.ejeX.invert(pointer(e)[0]);
     const i = this.#interseccionX(datos, x0);
@@ -114,32 +107,18 @@ export default class GraficaPrincipal {
     const datos1 = this.datos.intervalos[this.resolucion].pronostico;
     const x1 = this.ejeX.invert(pointer(e)[0]);
     const j = this.#interseccionX(datos1, x1);
-    // console.log(j)
-    // console.log(datos[i].fecha.getTime())
-    // console.log(datos1[j].fecha.getTime())
+
     if (datos1[j] && datos1[j].fecha.getTime() == datos[i].fecha.getTime()) {
       registro.promedio = datos1[j].promedio;
-      // console.log(datos1[j].promedio)
     }
-
-    // console.log(this.datos.intervalos[this.resolucion].pronostico)
-    // // para pronóstico
-    // const datos2 = this.datos.casos[this.resolucion];
-    // // const x0 = this.ejeX.invert(pointer(e)[0]);
-    // const i2 = this.#interseccionX(datos, x0);
-    // const pronostico = datos2[i];
 
     if (registro) {
       this.foco.attr('cx', this.ejeX(registro.fecha)).attr('cy', this.ejeY(registro[this.indicador]));
       this.sobreFoco(registro);
     }
-    // this.ejeX.domain([this.fechaInicial, this.fechaFinal]).range([0, this.dims.ancho]);
   };
 
   sobreFoco(registro) {
-    // console.log(registro)
-    // console.log(registro.fecha)
-    // console.log(this.datos)
     const posPuntoX = this.ejeX(registro.fecha);
     const posPuntoY = this.ejeY(registro[this.indicador]);
     const linea = 'M' + posPuntoX + ',' + posPuntoY + ' L' + posPuntoX + ', -40';
@@ -150,7 +129,6 @@ export default class GraficaPrincipal {
       .style('left', posPuntoX + 60 + 'px')
       .style('top', 200 + 'px');
 
-    // console.log(registro.promedio)
     if (registro.promedio) {
       this.pronosticoString = registro.promedio.toFixed() + ' pronóstico';
     } else {
@@ -187,9 +165,6 @@ export default class GraficaPrincipal {
 
   escalar(dims) {
     const { antiguoAncho, ancho, alto } = dims;
-    if (this.dims) {
-      console.log(ancho / antiguoAncho);
-    }
 
     this.svg.attr('width', ancho + dims.margenHorizontal).attr('height', alto + dims.margenVertical);
     this.vis.attr('transform', `translate(${dims.izquierda},${dims.superior})`);
@@ -197,54 +172,27 @@ export default class GraficaPrincipal {
     this.areaInteraccion.attr('width', ancho).attr('height', alto);
 
     select('#clip').append('rect').attr('width', ancho).attr('height', alto);
-    if (this.dims) {
-      console.log([ancho, this.dims.ancho]);
-    }
     select('#visualizacionEnfoque')
       .attr('width', ancho + dims.margenHorizontal)
-      // .attr("viewBox", [0, 0, ancho, alto/2]) // + this.dims.derecha + this.dims.izquierda +
-      .attr('viewBox', [0, 0, dims.ancho + dims.margenHorizontal, dims.alto / 2 + 50]) // + dims.derecha + dims.izquierda
+      .attr('viewBox', [0, 0, dims.ancho + dims.margenHorizontal, dims.alto / 2 + 50])
       .attr('max-width', dims.ancho)
       .style('display', 'block');
     this.enfoque.attr('transform', `translate(${dims.izquierda},${-dims.superior})`);
 
     if (select('#brush').node() || this.fechaInicialFocus) {
-      console.log(this.brush.extent());
       const sel = brushSelection(select('#brush').node()).map(function (x) {
         return x * (ancho / antiguoAncho);
       });
 
-      console.log(sel);
-      //
-
-      console.log(dims.ancho);
       this.gb.attr('width', dims.ancho);
-      // this.enfoque.selectAll('.eje')
 
       this.brush.extent([
         [0, 0],
         [dims.ancho, dims.alto / 2],
       ]);
 
-      // this.brush.move(this.gb, sel)
-
-      // if (this.datos) {
-      //   this.actualizarEjeX();
-      //   this.actualizarEjeY();
-      //   this.dibujar();
-      // }
-
       if (this.datos) {
         this.update([this.fechaInicialFocus, this.fechaFinalFocus]);
-
-        // this.actualizarEjeX()
-        // this.ejeX.domain([this.fechaInicialFocus, this.fechaFinalFocus]).range([0, dims.ancho]);
-        // this.dibujar()
-        // this.ejeX.domain([this.datos.fechaInicial, this.datos.fechaFinal]).range([0, dims.ancho]);
-        // this.indicadorX
-        //   .transition()
-        //   .duration(this.duracion)
-        //   .call(axisBottom(this.ejeX.copy()).ticks(timeWeek.every(4)));
       }
     }
     this.dims = dims;
@@ -273,7 +221,6 @@ export default class GraficaPrincipal {
       this.ejeYFocus.domain([0, maxCasos]).range([this.dims.alto, 0]);
       this.ejeY
         .domain([0, max(this.datos.casos[this.resolucion].map((obj) => obj[this.indicador]))])
-        // .domain([0, Math.max(maxCasos, maxAlto95, maxPromedio)])
         .range([this.dims.alto, 0]);
       this.indicadorY.transition().duration(duracion).call(axisLeft(this.ejeY));
       return this;
@@ -356,7 +303,6 @@ export default class GraficaPrincipal {
           .attr('fill', 'darkorchid')
           .attr('opacity', 0.5)
           .attr('stroke', 'none')
-          // .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
           .attr(
             'd',
             area()
@@ -374,7 +320,6 @@ export default class GraficaPrincipal {
           .attr('fill', 'purple')
           .attr('opacity', 0.5)
           .attr('stroke', 'none')
-          // .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
           .attr(
             'd',
             area()
@@ -391,7 +336,6 @@ export default class GraficaPrincipal {
           .attr('fill', 'indigo')
           .attr('opacity', 0.5)
           .attr('stroke', 'none')
-          // .attr('stroke-width', () => (this.resolucion === 'semanal' ? 1.5 : 0.5))
           .attr(
             'd',
             area()
@@ -416,18 +360,12 @@ export default class GraficaPrincipal {
         this.intervaloDeConfianza95.attr('d', '');
         this.intervaloDeConfianza80.attr('d', '');
         this.intervaloDeConfianza50.attr('d', '');
-
-        // this.lineaPronosticoBajo95.attr('d', '');
-        // this.lineaPronosticoAlto95.attr('d', '');
       }
     } else {
       this.lineaPronostico.attr('d', '');
       this.intervaloDeConfianza95.attr('d', '');
       this.intervaloDeConfianza80.attr('d', '');
       this.intervaloDeConfianza50.attr('d', '');
-
-      // this.lineaPronosticoBajo95.attr('d', '');
-      // this.lineaPronosticoAlto95.attr('d', '');
     }
 
     this.puntosCasos
@@ -440,9 +378,6 @@ export default class GraficaPrincipal {
             .attr('class', 'caso')
             .attr('cx', this.#posX)
             .attr('cy', this.#posY)
-            .on('mouseover', (e) => {
-              console.log(e);
-            })
             .call((enter) => enter.transition(transicion).attr('r', this.#radioPuntos)),
         (update) =>
           update.call((update) =>
@@ -462,7 +397,6 @@ export default class GraficaPrincipal {
 
   focus() {
     if (!select('#brush').node()) {
-      console.log(this.dims);
       select('#zoom').selectAll('*').remove();
       this.enfoque = select('#zoom')
         .append('svg')
@@ -522,7 +456,6 @@ export default class GraficaPrincipal {
 
   update(focusedArea) {
     const [minX, maxX] = focusedArea;
-    // console.log(focusedArea)
     const maxY = max(this.datos.casos[this.resolucion], (d) =>
       minX <= d.fecha && d.fecha <= maxX ? d[this.indicador] : NaN
     );
@@ -551,7 +484,6 @@ export default class GraficaPrincipal {
 
   conectarDatos(datos) {
     this.datos = datos;
-    // console.log(datos);
     return this;
   }
 
@@ -567,7 +499,6 @@ export default class GraficaPrincipal {
 
   cambiarPronostico(pronostico) {
     this.pronostico = pronostico;
-    // console.log(pronostico)
     return this;
   }
 }

@@ -24,7 +24,7 @@
 }
 
 #tituloPrincipal {
-  font-family: 'Titillium Web', sans-serif;
+  font-family: $fuenteTitulo;
   color: #fff;
   font-weight: 800;
   font-size: 2.4em;
@@ -50,7 +50,7 @@
 }
 
 #leyenda {
-  font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
+  font-family: $fuenteTitulo;
   font-size: 0.9em;
   font-weight: 400;
   border: 2px solid white;
@@ -60,20 +60,10 @@
   position: absolute;
   border-radius: 10px;
   flex-direction: column;
-  /* margin: 0.5em; */
   width: auto;
   padding-left: 0.5em;
   padding-top: 0.5em;
   background: #dddddd82;
-  // font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
-  // font-size: 0.9em;
-  // font-weight: 400;
-  // position: fixed;
-  // border: 2px solid #fff;
-  // padding: 0.5em;
-  // left: 100px;
-  // display: flex;
-  // flex-direction: column;
 
   .seccion {
     display: flex;
@@ -167,13 +157,12 @@
 }
 
 .foco {
-  // stroke: black;
   fill: rgba(255, 235, 109, 0.9);
   opacity: 0;
 }
 
 .lineaPrincipal {
-  fill: rgba(255, 255, 255, 0.7); // stroke: black;
+  fill: rgba(255, 255, 255, 0.7);
   clip-path: url(#clip);
 }
 
@@ -228,6 +217,7 @@
   h3 {
     font-size: 0.9em;
     margin: 0 0 10px 0;
+    color: black;
   }
 }
 
@@ -254,7 +244,7 @@
   height: fit-content;
   border-radius: 5px;
   z-index: 99;
-  font-family: 'Titillium Web', sans-serif;
+  font-family: $fuenteTitulo;
 }
 
 .lineaFoco {
