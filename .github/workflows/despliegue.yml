@@ -24,10 +24,12 @@ jobs:
           npm install
           npm run build
       - name: 🦅 Enviar por FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        uses: SamKirkland/FTP-Deploy-Action@4.3.2
         with:
           server: ${{ secrets.DOMINIO }}
           username: ${{ secrets.USUARIO }}
           server-dir: colev/pronostico-covid19/
+          protocol: ftps
+          port: 22
           local-dir: ./publico/
           password: ${{ secrets.CLAVE }}
