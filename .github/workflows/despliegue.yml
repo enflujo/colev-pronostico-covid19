@@ -28,6 +28,6 @@ jobs:
         with:
           server: ${{ secrets.DOMINIO }}
           username: ${{ secrets.USUARIO }}
-          server-dir: colev/colev-pronostico-covid19/publico/
+          server-dir: colev/pronostico-covid19/
           local-dir: ./publico/
           password: ${{ secrets.CLAVE }}
