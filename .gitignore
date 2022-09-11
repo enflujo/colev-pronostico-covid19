@@ -1,5 +1,4 @@
 node_modules
 .DS_Store
-!public/
-public/*
-!public/datos
+publico/*
+!publico/datos
