@@ -2,7 +2,7 @@ import { select, pointer } from 'd3-selection';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
 import { area, line } from 'd3-shape';
-import { bisector, max, extent } from 'd3-array';
+import { bisector, max } from 'd3-array';
 import { timeWeek } from 'd3-time';
 import { transition } from 'd3-transition';
 import { brushSelection, brushX } from 'd3-brush';
@@ -138,6 +138,7 @@ export default class GraficaPrincipal {
     this.lineaFoco.attr('d', linea);
     if (this.resolucion === 'semanal') {
       let fechaInicial = sumarRestarDias(registro.fecha, -6);
+
       this.infoFoco.html(
         fechaEnEspañol(fechaInicial) +
           ' ' +
@@ -256,13 +257,9 @@ export default class GraficaPrincipal {
       .enter()
       .append('circle')
       .attr('cx', 20)
-      .attr('cy', function (d, i) {
-        return 20 + i * 25;
-      })
+      .attr('cy', (d, i) => 20 + i * 25)
       .attr('r', 7)
-      .style('fill', function (d) {
-        return d[1];
-      });
+      .style('fill', (d) => d[1]);
 
     this.leyenda
       .selectAll('mylabels')
@@ -270,15 +267,9 @@ export default class GraficaPrincipal {
       .enter()
       .append('text')
       .attr('x', 40)
-      .attr('y', function (d, i) {
-        return 20 + i * 25;
-      }) // 100 is where the first dot appears. 25 is the distance between dots
-      .style('fill', function (d) {
-        return d[1];
-      })
-      .text(function (d) {
-        return d[0];
-      })
+      .attr('y', (d, i) => 20 + i * 25) // 100 is where the first dot appears. 25 is the distance between dots
+      .style('fill', (d) => d[1])
+      .text((d) => d[0])
       .attr('text-anchor', 'left')
       .style('alignment-baseline', 'middle');
   }
