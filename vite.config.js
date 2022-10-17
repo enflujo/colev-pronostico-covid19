@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+  base: '/pronostico-covid19/',
   server: {
     port: 3000,
   },
