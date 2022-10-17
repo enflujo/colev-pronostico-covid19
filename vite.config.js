@@ -11,5 +11,6 @@ export default defineConfig({
   build: {
     outDir: 'publico',
     assetsDir: 'recursos',
+    sourcemap: true,
   },
 });
