@@ -1,12 +1,20 @@
-import { select, pointer } from 'd3-selection';
-import { scaleLinear, scaleTime } from 'd3-scale';
-import { axisBottom, axisLeft } from 'd3-axis';
-import { area, line } from 'd3-shape';
-import { bisector, max } from 'd3-array';
-import { timeWeek } from 'd3-time';
-import { transition } from 'd3-transition';
-import { brushSelection, brushX } from 'd3-brush';
-import { utcDay } from 'd3-time';
+import {
+  area,
+  line,
+  select,
+  pointer,
+  scaleLinear,
+  scaleTime,
+  axisBottom,
+  axisLeft,
+  bisector,
+  max,
+  timeWeek,
+  transition,
+  brushSelection,
+  brushX,
+  utcDay,
+} from 'd3';
 import { fechaEnEspañol } from '../utilidades/ayudas';
 import { sumarRestarDias } from '../utilidades/ayudas';
 
