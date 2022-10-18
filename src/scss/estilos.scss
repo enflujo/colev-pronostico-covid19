@@ -56,54 +56,14 @@
   border: 2px solid white;
   right: 5vw;
   top: 10vh;
-  display: inline-flex;
   position: absolute;
   border-radius: 10px;
-  flex-direction: column;
-  width: auto;
+  width: 17em;
   padding-left: 0.5em;
   padding-top: 0.5em;
   background: #dddddd82;
-
-  .seccion {
-    display: flex;
-    align-items: center;
-    margin: 0.2em 0;
-    cursor: pointer;
-  }
-
-  .linea,
-  .rango {
-    width: 40px;
-    margin-right: 15px;
-  }
-
-  .linea {
-    height: 2px;
-  }
-
-  .rango {
-    height: 12px;
-  }
-
-  #medianNow {
-    .linea {
-      background-color: gray;
-    }
-  }
-
-  #medianForecast {
-    .linea {
-      background-color: #e3bfbe;
-    }
-  }
-
-  #now95 {
-    .rango {
-      background-color: #cbcbcb;
-    }
-  }
 }
+
 #forecast95 {
   .rango {
     fill: #d6a09f;
