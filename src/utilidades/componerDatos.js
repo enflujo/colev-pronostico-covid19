@@ -16,8 +16,8 @@ export default async () => {
   };
 
   const fechaPronostico = document.getElementById('seleccionePronostico');
-  const datosMuertes = await fetchCSV('/datos/deaths_df-' + fechaPronostico.value + '.csv');
-  const datosCasos = await fetchCSV('/datos/cases.csv');
+  const datosMuertes = await fetchCSV('./datos/deaths_df-' + fechaPronostico.value + '.csv');
+  const datosCasos = await fetchCSV('./datos/cases.csv');
   const muertes = limpiarDatos(datosMuertes, 'deaths');
   const casos = limpiarDatos(datosCasos, 'cases');
 
