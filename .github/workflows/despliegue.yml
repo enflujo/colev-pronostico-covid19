@@ -32,6 +32,5 @@ jobs:
           server: ${{ secrets.DOMINIO }}
           username: ${{ secrets.USUARIO }}
           password: ${{ secrets.CLAVE }}
-          protocol: 'ftps'
           local-dir: './publico/'
           server-dir: ${{ secrets.RUTA }}
