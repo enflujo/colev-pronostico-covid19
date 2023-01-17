@@ -10,16 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🦅 Actualizar build por SSH
-        uses: appleboy/ssh-action@master
+      - name: 🐯 Obtener código del repositorio
+        uses: actions/checkout@v3
         with:
-          host: ${{ secrets.DOMINIO }}
+          fetch-depth: 0
+
+      - name: 🐝 Usar Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts/*'
+
+      - name: 🐻 Instalar dependencias
+        run: yarn install --frozen-lockfile
+
+      - name: 🦒 Crear archivos del sitio
+        run: yarn build
+
+      - name: 🦅 Sincronizar archivos con el servidor
+        uses: SamKirkland/FTP-Deploy-Action@4.3.3
+        with:
+          server: ${{ secrets.DOMINIO }}
           username: ${{ secrets.USUARIO }}
           password: ${{ secrets.CLAVE }}
-          script: |
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh
-            cd ${{ secrets.RUTA }}
-            git pull origin main
-            yarn
-            yarn build
+          protocol: 'ftps'
+          local-dir: './publico/'
+          server-dir: ${{ secrets.RUTA }}
