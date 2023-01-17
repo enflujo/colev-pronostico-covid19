@@ -29,7 +29,7 @@ jobs:
       - name: 🦅 Sincronizar archivos con el servidor
         uses: easingthemes/ssh-deploy@main
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.LLAVE_SSH_AZURE }}
+          SSH_PRIVATE_KEY: ${{ secrets.LLAVE_SSH }}
           REMOTE_HOST: ${{ secrets.DOMINIO }}
           REMOTE_USER: ${{ secrets.USUARIO }}
           SOURCE: 'publico/'
