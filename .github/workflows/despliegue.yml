@@ -27,10 +27,10 @@ jobs:
         run: yarn build
 
       - name: 🦅 Sincronizar archivos con el servidor
-        uses: SamKirkland/FTP-Deploy-Action@4.3.3
-        with:
-          server: ${{ secrets.DOMINIO }}
-          username: ${{ secrets.USUARIO }}
-          password: ${{ secrets.CLAVE }}
-          local-dir: './publico/'
-          server-dir: ${{ secrets.RUTA }}
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.LLAVE_SSH_AZURE }}
+          REMOTE_HOST: ${{ secrets.DOMINIO }}
+          REMOTE_USER: ${{ secrets.USUARIO }}
+          SOURCE: 'publico/'
+          TARGET: ${{ secrets.RUTA }}
